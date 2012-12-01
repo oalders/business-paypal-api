@@ -8,8 +8,6 @@ use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
 our @ISA = qw(Business::PayPal::API);
-our $VERSION = '0.12';
-our $CVS_VERSION = '$Id: ReauthorizationRequest.pm,v 1.2 2007/09/27 20:32:32 scott Exp $';
 our @EXPORT_OK = qw(DoReauthorizationRequest);
 
 sub DoReauthorizationRequest {

@@ -8,8 +8,6 @@ use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
 our @ISA = qw(Business::PayPal::API);
-our $VERSION = '0.11';
-our $CVS_VERSION = '$Id: RefundTransaction.pm,v 1.4 2006/03/24 17:11:50 scott Exp $';
 our @EXPORT_OK = qw(RefundTransaction);
 
 sub RefundTransaction {

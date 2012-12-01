@@ -8,8 +8,6 @@ use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
 our @ISA = qw(Business::PayPal::API);
-our $VERSION = '0.11';
-our $CVS_VERSION = '$Id: TransactionSearch.pm,v 1.3 2006/03/24 17:11:37 scott Exp $';
 our @EXPORT_OK = qw( TransactionSearch );
 
 sub TransactionSearch {

@@ -9,8 +9,6 @@ use SOAP::Lite;
 use Business::PayPal::API ();
 
 our @ISA = qw(Business::PayPal::API);
-our $VERSION = '0.03';
-our $CVS_VERSION = '$Id: DirectPayments.pm,v 1.5 2009/07/28 18:00:59 scott Exp $';
 our @EXPORT_OK = qw(DoDirectPaymentRequest);
 
 sub DoDirectPaymentRequest {

@@ -8,8 +8,6 @@ use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
 our @ISA = qw(Business::PayPal::API);
-our $VERSION = '0.02';
-our $CVS_VERSION = '$Id: RecurringPayments.pm,v 1.2 2009/07/28 18:00:59 scott Exp $';
 our @EXPORT_OK = qw( SetCustomerBillingAgreement
                      GetBillingAgreementCustomerDetails
                      CreateRecurringPaymentsProfile
