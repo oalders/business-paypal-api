@@ -8,7 +8,11 @@ WriteMakefile(
     PREREQ_PM         => { SOAP::Lite => 0.67 },
     META_ADD          => {
         resources => {
-            repository => 'git://github.com/hembreed/Business-PayPal-API.git',
+            repository => {
+                type => 'git',
+                url  => 'git://github.com/oalders/business-paypal-api.git',
+                web => 'https://github.com/oalders/business-paypal-api',
+            },
         },
     },
     ($] >= 5.005 ?
