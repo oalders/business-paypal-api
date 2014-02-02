@@ -718,7 +718,7 @@ and are safe to use).
 
 As with all web services, if PayPal stop supporting their API
 endpoint, this module *may stop working*. You can help me keep this
-module up-to-date if you notice such an event occuring.
+module up-to-date if you notice such an event occurring.
 
 Also, I didn't implement a big fat class hierarchy to make this module
 "academically" correct. You'll notice that I fudged colliding
