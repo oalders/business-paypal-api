@@ -268,7 +268,12 @@ sub getErrors {
 }
 
 1;
+
+# ABSTRACT: PayPal SOAP API client with sandbox support
+
 __END__
+
+=encoding utf8
 
 =head1 NAME
 

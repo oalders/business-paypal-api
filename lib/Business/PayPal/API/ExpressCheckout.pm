@@ -331,7 +331,8 @@ sub DoExpressCheckoutPayment {
 }
 
 1;
-__END__
+
+=pod
 
 =head1 NAME
 
@@ -347,7 +348,7 @@ Business::PayPal::API::ExpressCheckout - PayPal Express Checkout API
   my %resp = $pp->SetExpressCheckout
                ( OrderTotal => '55.43',   ## defaults to USD
                  ReturnURL  => 'http://site.tld/return.html',
-                 CancelURL  => 'http://site.tld/canceltation.html', );
+                 CancelURL  => 'http://site.tld/cancellation.html', );
 
   ... time passes, buyer validates the token with PayPal ...
 

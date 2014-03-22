@@ -1,7 +1,6 @@
 Revision history for Perl module Business::PayPal::API
 
-0.71
-
+{{$NEXT}}
     - Merge in changes from Ron Phipps.
       - Reduce SOAP version requirement.
       - Protection eligibility support.
