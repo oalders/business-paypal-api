@@ -5,139 +5,199 @@ use strict;
 use warnings;
 
 use SOAP::Lite;
+
 #use SOAP::Lite +trace => 'debug';
 use Business::PayPal::API ();
 
-our @ISA = qw(Business::PayPal::API);
+our @ISA       = qw(Business::PayPal::API);
 our @EXPORT_OK = qw(DoDirectPaymentRequest);
 
 sub DoDirectPaymentRequest {
     my $self = shift;
     my %args = @_;
 
-    my %types =( PaymentAction     => '',
-                 # Payment Detail
-                 OrderTotal        => 'xs:string',
-                 ItemTotal         => 'xsd:string',
-                 ShippingTotal     => 'xsd:string',
-                 TaxTotal          => 'xsd:string',
-                 InvoiceID         => 'xsd:string',
-                 ButtonSource      => 'xsd:string',
-                 # Credit Card
-                 CreditCardType    => '',
-                 CreditCardNumber  => 'xsd:string',
-                 ExpMonth          => 'xs:int',
-                 ExpYear           => 'xs:int',
-                 # CardOwner
-                 Payer             => 'ns:EmailAddressType',
-                 # Payer Name
-                 FirstName         => 'xs:string',
-                 LastName          => 'xs:string',
-                 #  Payer Address
-                 Street1           => 'xs:string',
-                 Street2           => 'xs:string',
-                 CityName          => 'xs:string',
-                 StateOrProvince   => 'xs:string',
-                 Country           => 'xs:string',
-                 PostalCode        => 'xs:string',
-                 # Shipping Address
-                 ShipToName             => 'xs:string',
-                 ShipToStreet1          => 'xs:string',
-                 ShipToStreet2          => 'xs:string',
-                 ShipToCityName         => 'xs:string',
-                 ShipToStateOrProvince  => 'xs:string',
-                 ShipToCountry          => 'xs:string',
-                 ShipToPostalCode       => 'xs:string',
-                 # Misc
-                 CVV2              => 'xs:string',
-                 IPAddress         => 'xs:string',
-                 MerchantSessionId => 'xs:string',
-               );
+    my %types = (
+        PaymentAction => '',
 
-    $args{currencyID} ||= 'USD';
+        # Payment Detail
+        OrderTotal    => 'xs:string',
+        ItemTotal     => 'xsd:string',
+        ShippingTotal => 'xsd:string',
+        TaxTotal      => 'xsd:string',
+        InvoiceID     => 'xsd:string',
+        ButtonSource  => 'xsd:string',
+
+        # Credit Card
+        CreditCardType   => '',
+        CreditCardNumber => 'xsd:string',
+        ExpMonth         => 'xs:int',
+        ExpYear          => 'xs:int',
+
+        # CardOwner
+        Payer => 'ns:EmailAddressType',
+
+        # Payer Name
+        FirstName => 'xs:string',
+        LastName  => 'xs:string',
+
+        #  Payer Address
+        Street1         => 'xs:string',
+        Street2         => 'xs:string',
+        CityName        => 'xs:string',
+        StateOrProvince => 'xs:string',
+        Country         => 'xs:string',
+        PostalCode      => 'xs:string',
+
+        # Shipping Address
+        ShipToName            => 'xs:string',
+        ShipToStreet1         => 'xs:string',
+        ShipToStreet2         => 'xs:string',
+        ShipToCityName        => 'xs:string',
+        ShipToStateOrProvince => 'xs:string',
+        ShipToCountry         => 'xs:string',
+        ShipToPostalCode      => 'xs:string',
+
+        # Misc
+        CVV2              => 'xs:string',
+        IPAddress         => 'xs:string',
+        MerchantSessionId => 'xs:string',
+    );
+
+    $args{currencyID}    ||= 'USD';
     $args{PaymentAction} ||= 'Sale';
 
     #Assemble Credit Card Information
-    my @payername = ( SOAP::Data->name(FirstName => $args{FirstName}),
-                      SOAP::Data->name(LastName => $args{LastName}),
-                    );
+    my @payername = (
+        SOAP::Data->name( FirstName => $args{FirstName} ),
+        SOAP::Data->name( LastName  => $args{LastName} ),
+    );
 
-    my @payeraddr = ( SOAP::Data->name(Street1 => $args{Street1} )->type($types{Street1}),
-                      SOAP::Data->name(Street2 => $args{Street2} )->type($types{Street2}),
-                      SOAP::Data->name(CityName => $args{CityName} )->type($types{CityName}),
-                      SOAP::Data->name(StateOrProvince => $args{StateOrProvince} )->type($types{StateOrProvince}),
-                      SOAP::Data->name(Country => $args{Country} )->type($types{Country}),
-                      SOAP::Data->name(PostalCode => $args{PostalCode} )->type($types{PostalCode}),
-                    );
+    my @payeraddr = (
+        SOAP::Data->name( Street1 => $args{Street1} )
+            ->type( $types{Street1} ),
+        SOAP::Data->name( Street2 => $args{Street2} )
+            ->type( $types{Street2} ),
+        SOAP::Data->name( CityName => $args{CityName} )
+            ->type( $types{CityName} ),
+        SOAP::Data->name( StateOrProvince => $args{StateOrProvince} )
+            ->type( $types{StateOrProvince} ),
+        SOAP::Data->name( Country => $args{Country} )
+            ->type( $types{Country} ),
+        SOAP::Data->name( PostalCode => $args{PostalCode} )
+            ->type( $types{PostalCode} ),
+    );
 
-    my @shipaddr = (  SOAP::Data->name(Name => $args{ShipToName})->type($types{ShipToName}),
-                      SOAP::Data->name(Street1 => $args{ShipToStreet1} )->type($types{ShipToStreet1}),
-                      SOAP::Data->name(Street2 => $args{ShipToStreet2} )->type($types{ShipToStreet2}),
-                      SOAP::Data->name(CityName => $args{ShipToCityName} )->type($types{ShipToCityName}),
-                      SOAP::Data->name(StateOrProvince => $args{ShipToStateOrProvince} )->type($types{ShipToStateOrProvince}),
-                      SOAP::Data->name(Country => $args{ShipToCountry} )->type($types{ShipToCountry}),
-                      SOAP::Data->name(PostalCode => $args{ShipToPostalCode} )->type($types{ShipToPostalCode}),
-                    );
+    my @shipaddr = (
+        SOAP::Data->name( Name => $args{ShipToName} )
+            ->type( $types{ShipToName} ),
+        SOAP::Data->name( Street1 => $args{ShipToStreet1} )
+            ->type( $types{ShipToStreet1} ),
+        SOAP::Data->name( Street2 => $args{ShipToStreet2} )
+            ->type( $types{ShipToStreet2} ),
+        SOAP::Data->name( CityName => $args{ShipToCityName} )
+            ->type( $types{ShipToCityName} ),
+        SOAP::Data->name( StateOrProvince => $args{ShipToStateOrProvince} )
+            ->type( $types{ShipToStateOrProvince} ),
+        SOAP::Data->name( Country => $args{ShipToCountry} )
+            ->type( $types{ShipToCountry} ),
+        SOAP::Data->name( PostalCode => $args{ShipToPostalCode} )
+            ->type( $types{ShipToPostalCode} ),
+    );
 
-    my @ccard = ( SOAP::Data->name(CreditCardType => $args{CreditCardType})->type($types{CreditCardType}),
-                  SOAP::Data->name(CreditCardNumber => $args{CreditCardNumber})->type($types{CreditCardNumber}),
-                  SOAP::Data->name(ExpMonth => $args{ExpMonth})->type($types{ExpMonth}),
-                  SOAP::Data->name(ExpYear => $args{ExpYear})->type($types{ExpYear}),
-                );
+    my @ccard = (
+        SOAP::Data->name( CreditCardType => $args{CreditCardType} )
+            ->type( $types{CreditCardType} ),
+        SOAP::Data->name( CreditCardNumber => $args{CreditCardNumber} )
+            ->type( $types{CreditCardNumber} ),
+        SOAP::Data->name( ExpMonth => $args{ExpMonth} )
+            ->type( $types{ExpMonth} ),
+        SOAP::Data->name( ExpYear => $args{ExpYear} )
+            ->type( $types{ExpYear} ),
+    );
 
-    my @ccowner = ( SOAP::Data->name
-                    (CardOwner => \SOAP::Data->value
-                     ( SOAP::Data->name(Payer => $args{Payer})->type($types{Payer}),
-                       SOAP::Data->name(PayerName => \SOAP::Data->value ( @payername )),
-                       SOAP::Data->name(Address => \SOAP::Data->value( @payeraddr )),
-                     )
-                    )
-                  );
+    my @ccowner = (
+        SOAP::Data->name(
+            CardOwner => \SOAP::Data->value(
+                SOAP::Data->name( Payer => $args{Payer} )
+                    ->type( $types{Payer} ),
+                SOAP::Data->name(
+                    PayerName => \SOAP::Data->value( @payername )
+                ),
+                SOAP::Data->name(
+                    Address => \SOAP::Data->value( @payeraddr )
+                ),
+            )
+        )
+    );
 
-    push( @ccard, @ccowner);
-    push( @ccard, SOAP::Data->name(CVV2 => $args{CVV2})->type($types{CVV2}));
+    push( @ccard, @ccowner );
+    push( @ccard,
+        SOAP::Data->name( CVV2 => $args{CVV2} )->type( $types{CVV2} ) );
 
     #Assemble Payment Details
-    my @paydetail = ( SOAP::Data->name(OrderTotal => $args{OrderTotal})
-                      ->attr({currencyID=>$args{currencyID}})->type($types{currencyID}),
-                      SOAP::Data->name(ItemTotal => $args{ItemTotal})
-                      ->attr({currencyID => $args{currencyID}})->type($types{currencyID}),
-                      SOAP::Data->name(TaxTotal => $args{TaxTotal})
-                      ->attr({currencyID => $args{currencyID}})->type($types{currencyID}),
-                      SOAP::Data->name(ShippingTotal => $args{ShippingTotal})
-                      ->attr({currencyID => $args{currencyID}})->type($types{currencyID}),
-                      SOAP::Data->name(ShipToAddress => \SOAP::Data->value( @shipaddr)),
-                      SOAP::Data->name(InvoiceID    => $args{InvoiceID})->type($types{InvoiceID}),
-                      SOAP::Data->name(ButtonSource => $args{ButtonSource})->type($types{ButtonSource})
-                    );
+    my @paydetail = (
+        SOAP::Data->name( OrderTotal => $args{OrderTotal} )
+            ->attr( { currencyID => $args{currencyID} } )
+            ->type( $types{currencyID} ),
+        SOAP::Data->name( ItemTotal => $args{ItemTotal} )
+            ->attr( { currencyID => $args{currencyID} } )
+            ->type( $types{currencyID} ),
+        SOAP::Data->name( TaxTotal => $args{TaxTotal} )
+            ->attr( { currencyID => $args{currencyID} } )
+            ->type( $types{currencyID} ),
+        SOAP::Data->name( ShippingTotal => $args{ShippingTotal} )
+            ->attr( { currencyID => $args{currencyID} } )
+            ->type( $types{currencyID} ),
+        SOAP::Data->name( ShipToAddress => \SOAP::Data->value( @shipaddr ) ),
+        SOAP::Data->name( InvoiceID     => $args{InvoiceID} )
+            ->type( $types{InvoiceID} ),
+        SOAP::Data->name( ButtonSource => $args{ButtonSource} )
+            ->type( $types{ButtonSource} )
+    );
 
-    my @payreqdetail = ( SOAP::Data->name(PaymentAction => $args{PaymentAction})->type(''),
-                         SOAP::Data->name(PaymentDetails =>\SOAP::Data->value( @paydetail )),
-                         SOAP::Data->name(CreditCard => \SOAP::Data->value( @ccard)),
-                         SOAP::Data->name(IPAddress => $args{IPAddress})->type($types{IPAddress}),
-                         SOAP::Data->name(MerchantSessionId => $args{MerchantSessionId})->type($types{MerchantSessionId}),
-                       );
+    my @payreqdetail = (
+        SOAP::Data->name( PaymentAction => $args{PaymentAction} )->type( '' ),
+        SOAP::Data->name(
+            PaymentDetails => \SOAP::Data->value( @paydetail )
+        ),
+        SOAP::Data->name( CreditCard => \SOAP::Data->value( @ccard ) ),
+        SOAP::Data->name( IPAddress  => $args{IPAddress} )
+            ->type( $types{IPAddress} ),
+        SOAP::Data->name( MerchantSessionId => $args{MerchantSessionId} )
+            ->type( $types{MerchantSessionId} ),
+    );
 
     #Assemble request
-    my @reqval = ( SOAP::Data->value($self->version_req),
-                   SOAP::Data->name( DoDirectPaymentRequestDetails => \SOAP::Data->value( @payreqdetail ))->attr({xmlns=>"urn:ebay:apis:eBLBaseComponents"}),
-                 );
-    my $request = (SOAP::Data->name(DoDirectPaymentRequest => \SOAP::Data->value(@reqval)), );
-    my $som = $self->doCall( DoDirectPaymentReq  => $request ) or return;
-    my $path = '/Envelope/Body/DoDirectPaymentResponse';
+    my @reqval = (
+        SOAP::Data->value( $self->version_req ),
+        SOAP::Data->name(
+            DoDirectPaymentRequestDetails =>
+                \SOAP::Data->value( @payreqdetail )
+        )->attr( { xmlns => "urn:ebay:apis:eBLBaseComponents" } ),
+    );
+    my $request = (
+        SOAP::Data->name(
+            DoDirectPaymentRequest => \SOAP::Data->value( @reqval )
+        ),
+    );
+    my $som      = $self->doCall( DoDirectPaymentReq => $request ) or return;
+    my $path     = '/Envelope/Body/DoDirectPaymentResponse';
     my %response = ();
-    unless( $self->getBasic($som, $path, \%response) ) {
-        $self->getErrors($som, $path, \%response);
+    unless ( $self->getBasic( $som, $path, \%response ) ) {
+        $self->getErrors( $som, $path, \%response );
         return %response;
     }
 
-    $self->getFields( $som, $path, \%response, { TransactionID => 'TransactionID',
-                                                 Amount        => 'Amount',
-                                                 AVSCode       => 'AVSCode',
-                                                 CVV2Code      => 'CVV2Code',
-                                                 Timestamp     => 'Timestamp',
-                                               }
-                    );
+    $self->getFields(
+        $som, $path,
+        \%response,
+        {   TransactionID => 'TransactionID',
+            Amount        => 'Amount',
+            AVSCode       => 'AVSCode',
+            CVV2Code      => 'CVV2Code',
+            Timestamp     => 'Timestamp',
+        }
+    );
 
     return %response;
 }

@@ -7,66 +7,72 @@ use warnings;
 use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
-our @ISA = qw(Business::PayPal::API);
+our @ISA       = qw(Business::PayPal::API);
 our @EXPORT_OK = qw( TransactionSearch );
 
 sub TransactionSearch {
     my $self = shift;
     my %args = @_;
 
-    my %types = ( StartDate        => 'xs:dateTime',
-                  EndDate          => 'xs:dateTime',
-                  Payer            => 'ebl:EmailAddressType',
-                  Receiver         => 'ebl:EmailAddressType',
-                  ReceiptID        => 'xs:string',
-                  TransactionID    => 'xs:string',
-                  InvoiceID        => 'xs:string',
-                  PayerName        => 'xs:string',
-                  AuctionItemNumer => 'xs:string',
-                  TransactionClass => '',
-                  Amount           => 'ebl:BasicAmountType',
-                  CurrencyCode     => 'xs:token',
-                  Status           => '',
-                );
+    my %types = (
+        StartDate        => 'xs:dateTime',
+        EndDate          => 'xs:dateTime',
+        Payer            => 'ebl:EmailAddressType',
+        Receiver         => 'ebl:EmailAddressType',
+        ReceiptID        => 'xs:string',
+        TransactionID    => 'xs:string',
+        InvoiceID        => 'xs:string',
+        PayerName        => 'xs:string',
+        AuctionItemNumer => 'xs:string',
+        TransactionClass => '',
+        Amount           => 'ebl:BasicAmountType',
+        CurrencyCode     => 'xs:token',
+        Status           => '',
+    );
 
-    my @trans = 
-      (
-       $self->version_req,
-       SOAP::Data->name( StartDate => $args{StartDate} )->type( delete $types{StartDate} )
-      );
+    my @trans = (
+        $self->version_req,
+        SOAP::Data->name( StartDate => $args{StartDate} )
+            ->type( delete $types{StartDate} )
+    );
 
     for my $type ( keys %types ) {
         next unless $args{$type};
-        push @trans, SOAP::Data->name( $type => $args{$type} )->type($types{$type});
+        push @trans,
+            SOAP::Data->name( $type => $args{$type} )->type( $types{$type} );
     }
 
-    my $request = SOAP::Data->name
-      ( TransactionSearchRequest => \SOAP::Data->value( @trans ) )
-	->type("ns:TransactionSearchRequestType");
+    my $request
+        = SOAP::Data->name(
+        TransactionSearchRequest => \SOAP::Data->value( @trans ) )
+        ->type( "ns:TransactionSearchRequestType" );
 
     my $som = $self->doCall( TransactionSearchReq => $request )
-      or return;
+        or return;
 
     my $path = '/Envelope/Body/TransactionSearchResponse';
 
     my %response = ();
-    unless( $self->getBasic($som, $path, \%response) ) {
-        $self->getErrors($som, $path, \%response);
+    unless ( $self->getBasic( $som, $path, \%response ) ) {
+        $self->getErrors( $som, $path, \%response );
         return %response;
     }
 
-    return $self->getFieldsList( $som, $path . '/PaymentTransactions',
-                                 { Timestamp        => 'Timestamp',
-                                   Timezone         => 'Timezone',
-                                   Type             => 'Type',
-                                   Payer            => 'Payer',
-                                   PayerDisplayName => 'PayerDisplayName',
-                                   TransactionID    => 'TransactionID',
-                                   Status           => 'Status',
-                                   GrossAmount      => 'GrossAmount',
-                                   FeeAmount        => 'FeeAmount',
-                                   NetAmount        => 'NetAmount',
-                                 } );
+    return $self->getFieldsList(
+        $som,
+        $path . '/PaymentTransactions',
+        {   Timestamp        => 'Timestamp',
+            Timezone         => 'Timezone',
+            Type             => 'Type',
+            Payer            => 'Payer',
+            PayerDisplayName => 'PayerDisplayName',
+            TransactionID    => 'TransactionID',
+            Status           => 'Status',
+            GrossAmount      => 'GrossAmount',
+            FeeAmount        => 'FeeAmount',
+            NetAmount        => 'NetAmount',
+        }
+    );
 }
 
 1;

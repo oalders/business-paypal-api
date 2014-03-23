@@ -1,6 +1,7 @@
 use Test::More;
-if( ! $ENV{WPP_TEST} || ! -f $ENV{WPP_TEST} ) {
-    plan skip_all => 'No WPP_TEST env var set. Please see README to run tests';
+if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
+    plan skip_all =>
+        'No WPP_TEST env var set. Please see README to run tests';
 }
 else {
     plan tests => 6;
@@ -22,24 +23,27 @@ my $pp = new Business::PayPal::API::ExpressCheckout( %args );
 ## set checkout info
 ##
 #$Business::PayPal::API::Debug = 1;
-my %response = $pp->SetExpressCheckout
-  ( OrderTotal => '55.43',
-    ReturnURL  => 'http://www.google.com/',
-    CancelURL  => 'http://www.google.com/', 
-    Custom     => "This field is custom. Isn't that great?",
+my %response = $pp->SetExpressCheckout(
+    OrderTotal    => '55.43',
+    ReturnURL     => 'http://www.google.com/',
+    CancelURL     => 'http://www.google.com/',
+    Custom        => "This field is custom. Isn't that great?",
     PaymentAction => 'Sale',
-    BuyerEmail => $args{BuyerEmail},   ## from %args
-  );
+    BuyerEmail    => $args{BuyerEmail},                          ## from %args
+);
+
 #$Business::PayPal::API::Debug = 0;
 
 my $token = $response{Token};
 
 ok( $token, "Got token" );
 
-die "No token from PayPal! Check your authentication information and try again."
-  unless $token;
+die
+    "No token from PayPal! Check your authentication information and try again."
+    unless $token;
 
-my $pp_url = "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token";
+my $pp_url
+    = "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token";
 
 print STDERR <<"_TOKEN_";
 
@@ -61,14 +65,15 @@ _TOKEN_
 
 print STDERR "\nType or paste that PayerID here and hit Enter: \n";
 
-my $payerid = <STDIN>; chomp $payerid;
+my $payerid = <STDIN>;
+chomp $payerid;
 
 die "Need a PayerID.\n" unless $payerid;
 
 ##
 ## get checkout details
 ##
-my %details = $pp->GetExpressCheckoutDetails($token);
+my %details = $pp->GetExpressCheckoutDetails( $token );
 is( $details{Token}, $token, "details ok" );
 
 #use Data::Dumper;
@@ -76,17 +81,18 @@ is( $details{Token}, $token, "details ok" );
 
 $details{PayerID} = $payerid;
 
-my %payment = ( Token          => $details{Token},
-		PaymentAction  => 'Sale',
-		PayerID        => $details{PayerID},
-		OrderTotal     => '55.43',
-	      );
+my %payment = (
+    Token         => $details{Token},
+    PaymentAction => 'Sale',
+    PayerID       => $details{PayerID},
+    OrderTotal    => '55.43',
+);
 
 ##
 ## do checkout
 ##
-my %payinfo = $pp->DoExpressCheckoutPayment(%payment);
+my %payinfo = $pp->DoExpressCheckoutPayment( %payment );
 
-like( $payinfo{Ack}, qr/Success/ , "successful payment" );
-is( $payinfo{Token}, $token, "payment ok" );
-is( $payinfo{GrossAmount}, 55.43, "amount correct" );
+like( $payinfo{Ack}, qr/Success/, "successful payment" );
+is( $payinfo{Token},       $token, "payment ok" );
+is( $payinfo{GrossAmount}, 55.43,  "amount correct" );

@@ -5,10 +5,11 @@ use strict;
 use warnings;
 
 use SOAP::Lite 0.67;
+
 #use SOAP::Lite +trace => 'debug';
 use Business::PayPal::API ();
 
-our @ISA = qw(Business::PayPal::API);
+our @ISA       = qw(Business::PayPal::API);
 our @EXPORT_OK = qw(DoCaptureRequest);
 
 sub DoCaptureRequest {
@@ -16,66 +17,70 @@ sub DoCaptureRequest {
     my %args = @_;
 
     my %types = (
-          AuthorizationID => 'xs:string',
+        AuthorizationID => 'xs:string',
+
 #The inclusion of the "ebl:CompleteCodeType" here, or any other reasonable type,
 #causes and error. Assigning a null string allows the module to work normally
 #with the exception that testing for "Success" fails, one must test for not
 #being a "Failure"... there may be a life lesson here.
-          CompleteType    => '',
-          Amount          => 'ebl:BasicAmountType',
-          Note            => 'xs:string',
-          );
+        CompleteType => '',
+        Amount       => 'ebl:BasicAmountType',
+        Note         => 'xs:string',
+    );
 
-    $args{currencyID} ||= 'USD';
+    $args{currencyID}   ||= 'USD';
     $args{CompleteType} ||= 'Complete';
 
-    my @ref_trans = 
-      (
-       $self->version_req,
-       SOAP::Data->name( AuthorizationID => $args{AuthorizationID} )->type($types{AuthorizationID}),
-       SOAP::Data->name( CompleteType => $args{CompleteType} )->type($types{CompleteType}),
-      );
+    my @ref_trans = (
+        $self->version_req,
+        SOAP::Data->name( AuthorizationID => $args{AuthorizationID} )
+            ->type( $types{AuthorizationID} ),
+        SOAP::Data->name( CompleteType => $args{CompleteType} )
+            ->type( $types{CompleteType} ),
+    );
 
-    if( $args{Amount} ) {
-    push @ref_trans,
-      SOAP::Data->name( Amount => $args{Amount} )
-          ->type( $types{Amount} )
-            ->attr( { currencyID => $args{currencyID} } )
+    if ( $args{Amount} ) {
+        push @ref_trans,
+            SOAP::Data->name( Amount => $args{Amount} )
+            ->type( $types{Amount} )
+            ->attr( { currencyID => $args{currencyID} } );
     }
 
-    my $request = SOAP::Data->name
-      ( DoCaptureRequest => \SOAP::Data->value( @ref_trans ) )
-            ->type("ns:DoCaptureRequestType");
+    my $request
+        = SOAP::Data->name(
+        DoCaptureRequest => \SOAP::Data->value( @ref_trans ) )
+        ->type( "ns:DoCaptureRequestType" );
 
     my $som = $self->doCall( DoCaptureReq => $request )
-      or return;
+        or return;
 
     my $path = '/Envelope/Body/DoCaptureResponse';
 
     my %response = ();
-    unless( $self->getBasic($som, $path, \%response) ) {
-        $self->getErrors($som, $path, \%response);
+    unless ( $self->getBasic( $som, $path, \%response ) ) {
+        $self->getErrors( $som, $path, \%response );
         return %response;
     }
     $path .= '/DoCaptureResponseDetails/PaymentInfo';
-    $self->getFields($som, $path, \%response,
-                     { 
-                     TransactionID   => 'TransactionID',
-                     ParentTransactionID => 'ParentTransactionID',
-                     ReceiptID       => 'ReceiptID',
-                     TransactionType => 'TransactionType',
-                     PaymentType     => 'PaymentType',
-                     PaymentDate     => 'PaymentDate',
-                     GrossAmount     => 'GrossAmount',
-                     FeeAmount       => 'FeeAmount',
-                     SettleAmount    => 'SettleAmount',
-                     TaxAmount       => 'TaxAmount',
-                     ExchangeRate    => 'ExchangeRate',
-                     PaymentStatus   => 'PaymentStatus',
-                     PendingReason   => 'PendingReason',
-                     ReasonCode      => 'ReasonCode',
-                     }
-                    );
+    $self->getFields(
+        $som, $path,
+        \%response,
+        {   TransactionID       => 'TransactionID',
+            ParentTransactionID => 'ParentTransactionID',
+            ReceiptID           => 'ReceiptID',
+            TransactionType     => 'TransactionType',
+            PaymentType         => 'PaymentType',
+            PaymentDate         => 'PaymentDate',
+            GrossAmount         => 'GrossAmount',
+            FeeAmount           => 'FeeAmount',
+            SettleAmount        => 'SettleAmount',
+            TaxAmount           => 'TaxAmount',
+            ExchangeRate        => 'ExchangeRate',
+            PaymentStatus       => 'PaymentStatus',
+            PendingReason       => 'PendingReason',
+            ReasonCode          => 'ReasonCode',
+        }
+    );
 
     return %response;
 }

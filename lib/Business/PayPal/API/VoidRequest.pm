@@ -7,46 +7,47 @@ use warnings;
 use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
-our @ISA = qw(Business::PayPal::API);
+our @ISA       = qw(Business::PayPal::API);
 our @EXPORT_OK = qw(DoVoidRequest);
 
 sub DoVoidRequest {
     my $self = shift;
     my %args = @_;
 
-    my %types = ( AuthorizationID => 'xs:string',
-                  Note            => 'xs:string', );
+    my %types = (
+        AuthorizationID => 'xs:string',
+        Note            => 'xs:string',
+    );
 
+    my @ref_trans = (
+        $self->version_req,
+        SOAP::Data->name( AuthorizationID => $args{AuthorizationID} )
+            ->type( $types{AuthorizationID} ),
+    );
 
-    my @ref_trans = 
-      (
-       $self->version_req,
-       SOAP::Data->name( AuthorizationID => $args{AuthorizationID} )->type($types{AuthorizationID}),
-      );
-
-    if ($args{Note}) {
-    push @ref_trans,
-      SOAP::Data->name( Note => $args{Note} )->type( $types{Note} )
-      if $args{Note};
+    if ( $args{Note} ) {
+        push @ref_trans,
+            SOAP::Data->name( Note => $args{Note} )->type( $types{Note} )
+            if $args{Note};
     }
-    my $request = SOAP::Data->name
-      ( DoVoidRequest => \SOAP::Data->value( @ref_trans ) )
-        ->type("ns:VoidRequestType");
+    my $request
+        = SOAP::Data->name(
+        DoVoidRequest => \SOAP::Data->value( @ref_trans ) )
+        ->type( "ns:VoidRequestType" );
 
     my $som = $self->doCall( DoVoidReq => $request )
-      or return;
+        or return;
 
     my $path = '/Envelope/Body/DoVoidResponse';
 
     my %response = ();
-    unless( $self->getBasic($som, $path, \%response) ) {
-        $self->getErrors($som, $path, \%response);
+    unless ( $self->getBasic( $som, $path, \%response ) ) {
+        $self->getErrors( $som, $path, \%response );
         return %response;
     }
 
-    $self->getFields($som, $path, \%response,
-                     { AuthorizationID => 'AuthorizationID' }
-                    );
+    $self->getFields( $som, $path, \%response,
+        { AuthorizationID => 'AuthorizationID' } );
 
     return %response;
 }

@@ -7,122 +7,131 @@ use warnings;
 use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
-our @ISA = qw(Business::PayPal::API);
-our @EXPORT_OK = qw(GetTransactionDetails);  ## fake exporter
+our @ISA       = qw(Business::PayPal::API);
+our @EXPORT_OK = qw(GetTransactionDetails);    ## fake exporter
 
 sub GetTransactionDetails {
     my $self = shift;
     my %args = @_;
 
-    my @trans = 
-      (
-       $self->version_req,
-       SOAP::Data->name( TransactionID => $args{TransactionID} )->type( 'xs:string' ),
-      );
+    my @trans = (
+        $self->version_req,
+        SOAP::Data->name( TransactionID => $args{TransactionID} )
+            ->type( 'xs:string' ),
+    );
 
-    my $request = SOAP::Data->name
-      ( GetTransactionDetailsRequest => \SOAP::Data->value( @trans ) )
-	->type("ns:GetTransactionDetailsRequestType");
+    my $request
+        = SOAP::Data->name(
+        GetTransactionDetailsRequest => \SOAP::Data->value( @trans ) )
+        ->type( "ns:GetTransactionDetailsRequestType" );
 
     my $som = $self->doCall( GetTransactionDetailsReq => $request )
-      or return;
+        or return;
 
     my $path = '/Envelope/Body/GetTransactionDetailsResponse';
 
     my %response = ();
-    unless( $self->getBasic($som, $path, \%response) ) {
-        $self->getErrors($som, $path, \%response);
+    unless ( $self->getBasic( $som, $path, \%response ) ) {
+        $self->getErrors( $som, $path, \%response );
         return %response;
     }
 
     $path .= '/PaymentTransactionDetails';
 
-    $self->getFields($som, $path, \%response,
-                     { Business            => '/ReceiverInfo/Business',
-                       Receiver            => '/ReceiverInfo/Receiver',
-                       ReceiverID          => '/ReceiverInfo/ReceiverID',
+    $self->getFields(
+        $som, $path,
+        \%response,
+        {   Business   => '/ReceiverInfo/Business',
+            Receiver   => '/ReceiverInfo/Receiver',
+            ReceiverID => '/ReceiverInfo/ReceiverID',
 
-                       Payer               => '/PayerInfo/Payer',
-                       PayerID             => '/PayerInfo/PayerID',
-                       PayerStatus         => '/PayerInfo/PayerStatus',
+            Payer       => '/PayerInfo/Payer',
+            PayerID     => '/PayerInfo/PayerID',
+            PayerStatus => '/PayerInfo/PayerStatus',
 
-                       Salutation          => '/PayerInfo/PayerName/Salutation',
-                       FirstName           => '/PayerInfo/PayerName/FirstName',
-                       MiddleName          => '/PayerInfo/PayerName/MiddleName',
-                       LastName            => '/PayerInfo/PayerName/LastName',
+            Salutation => '/PayerInfo/PayerName/Salutation',
+            FirstName  => '/PayerInfo/PayerName/FirstName',
+            MiddleName => '/PayerInfo/PayerName/MiddleName',
+            LastName   => '/PayerInfo/PayerName/LastName',
 
-                       PayerCountry        => '/PayerInfo/PayerCountry',
-                       PayerBusiness       => '/PayerInfo/PayerBusiness',
+            PayerCountry  => '/PayerInfo/PayerCountry',
+            PayerBusiness => '/PayerInfo/PayerBusiness',
 
-                       AddressOwner        => '/PayerInfo/Address/AddressOwner',
-                       AddressStatus       => '/PayerInfo/Address/AddressStatus',
-                       ADD_Name            => '/PayerInfo/Address/Name',
-                       Street1             => '/PayerInfo/Address/Street1',
-                       Street2             => '/PayerInfo/Address/Street2',
-                       CityName            => '/PayerInfo/Address/CityName',
-                       StateOrProvince     => '/PayerInfo/Address/StateOrProvince',
-                       Country             => '/PayerInfo/Address/Country',
-                       CountryName         => '/PayerInfo/Address/CountryName',
-                       Phone               => '/PayerInfo/Address/Phone',
-                       PostalCode          => '/PayerInfo/Address/PostalCode',
+            AddressOwner    => '/PayerInfo/Address/AddressOwner',
+            AddressStatus   => '/PayerInfo/Address/AddressStatus',
+            ADD_Name        => '/PayerInfo/Address/Name',
+            Street1         => '/PayerInfo/Address/Street1',
+            Street2         => '/PayerInfo/Address/Street2',
+            CityName        => '/PayerInfo/Address/CityName',
+            StateOrProvince => '/PayerInfo/Address/StateOrProvince',
+            Country         => '/PayerInfo/Address/Country',
+            CountryName     => '/PayerInfo/Address/CountryName',
+            Phone           => '/PayerInfo/Address/Phone',
+            PostalCode      => '/PayerInfo/Address/PostalCode',
 
-                       TransactionID       => '/PaymentInfo/TransactionID',
-                       ParentTransactionID => '/PaymentInfo/ParentTransactionID',
-                       ReceiptID           => '/PaymentInfo/ReceiptID',
-                       TransactionType     => '/PaymentInfo/TransactionType',
-                       PaymentType         => '/PaymentInfo/PaymentType',
-                       PaymentDate         => '/PaymentInfo/PaymentDate',
-                       GrossAmount         => '/PaymentInfo/GrossAmount',
-                       FeeAmount           => '/PaymentInfo/FeeAmount',
-                       SettleAmount        => '/PaymentInfo/SettleAmount',
-                       TaxAmount           => '/PaymentInfo/TaxAmount',
-                       ExchangeRate        => '/PaymentInfo/ExchangeRate',
-                       PaymentStatus       => '/PaymentInfo/PaymentStatus',
-                       PendingReason       => '/PaymentInfo/PendingReason',
-                       ReasonCode          => '/PaymentInfo/ReasonCode',
-                       ProtectionEligibility          => '/PaymentInfo/ProtectionEligibility',
+            TransactionID         => '/PaymentInfo/TransactionID',
+            ParentTransactionID   => '/PaymentInfo/ParentTransactionID',
+            ReceiptID             => '/PaymentInfo/ReceiptID',
+            TransactionType       => '/PaymentInfo/TransactionType',
+            PaymentType           => '/PaymentInfo/PaymentType',
+            PaymentDate           => '/PaymentInfo/PaymentDate',
+            GrossAmount           => '/PaymentInfo/GrossAmount',
+            FeeAmount             => '/PaymentInfo/FeeAmount',
+            SettleAmount          => '/PaymentInfo/SettleAmount',
+            TaxAmount             => '/PaymentInfo/TaxAmount',
+            ExchangeRate          => '/PaymentInfo/ExchangeRate',
+            PaymentStatus         => '/PaymentInfo/PaymentStatus',
+            PendingReason         => '/PaymentInfo/PendingReason',
+            ReasonCode            => '/PaymentInfo/ReasonCode',
+            ProtectionEligibility => '/PaymentInfo/ProtectionEligibility',
 
-                       InvoiceID           => '/PaymentItemInfo/InvoiceID',
-                       Custom              => '/PaymentItemInfo/Custom',
-                       Memo                => '/PaymentItemInfo/Memo',
-                       SalesTax            => '/PaymentItemInfo/SalesTax',
+            InvoiceID => '/PaymentItemInfo/InvoiceID',
+            Custom    => '/PaymentItemInfo/Custom',
+            Memo      => '/PaymentItemInfo/Memo',
+            SalesTax  => '/PaymentItemInfo/SalesTax',
 
-                       PII_SalesTax        => '/PaymentItemInfo/PaymentItem/SalesTax',
-                       PII_Name            => '/PaymentItemInfo/PaymentItem/Name',
-                       PII_Number          => '/PaymentItemInfo/PaymentItem/Number',
-                       PII_Quantity        => '/PaymentItemInfo/PaymentItem/Quantity',
-                       PII_Amount          => '/PaymentItemInfo/PaymentItem/Amount',
-                       PII_Options         => '/PaymentItemInfo/PaymentItem/Options',
+            PII_SalesTax => '/PaymentItemInfo/PaymentItem/SalesTax',
+            PII_Name     => '/PaymentItemInfo/PaymentItem/Name',
+            PII_Number   => '/PaymentItemInfo/PaymentItem/Number',
+            PII_Quantity => '/PaymentItemInfo/PaymentItem/Quantity',
+            PII_Amount   => '/PaymentItemInfo/PaymentItem/Amount',
+            PII_Options  => '/PaymentItemInfo/PaymentItem/Options',
 
-                       PII_SubscriptionID   => '/PaymentItemInfo/Subscription/SubscriptionID',
-                       PII_SubscriptionDate => '/PaymentItemInfo/Subscription/SubscriptionDate',
-                       PII_EffectiveDate    => '/PaymentItemInfo/Subscription/EffectiveDate',
-                       PII_RetryTime        => '/PaymentItemInfo/Subscription/RetryTime',
-                       PII_Username         => '/PaymentItemInfo/Subscription/Username',
-                       PII_Password         => '/PaymentItemInfo/Subscription/Password',
-                       PII_Recurrences      => '/PaymentItemInfo/Subscription/Recurrences',
-                       PII_reattempt        => '/PaymentItemInfo/Subscription/reattempt',
-                       PII_recurring        => '/PaymentItemInfo/Subscription/recurring',
-                       PII_Amount           => '/PaymentItemInfo/Subscription/Amount',
-                       PII_period           => '/PaymentItemInfo/Subscription/period',
+            PII_SubscriptionID =>
+                '/PaymentItemInfo/Subscription/SubscriptionID',
+            PII_SubscriptionDate =>
+                '/PaymentItemInfo/Subscription/SubscriptionDate',
+            PII_EffectiveDate =>
+                '/PaymentItemInfo/Subscription/EffectiveDate',
+            PII_RetryTime   => '/PaymentItemInfo/Subscription/RetryTime',
+            PII_Username    => '/PaymentItemInfo/Subscription/Username',
+            PII_Password    => '/PaymentItemInfo/Subscription/Password',
+            PII_Recurrences => '/PaymentItemInfo/Subscription/Recurrences',
+            PII_reattempt   => '/PaymentItemInfo/Subscription/reattempt',
+            PII_recurring   => '/PaymentItemInfo/Subscription/recurring',
+            PII_Amount      => '/PaymentItemInfo/Subscription/Amount',
+            PII_period      => '/PaymentItemInfo/Subscription/period',
 
-                       PII_BuyerID          => '/PaymentItemInfo/Auction/BuyerID',
-                       PII_ClosingDate      => '/PaymentItemInfo/Auction/ClosingDate',
-                       PII_multiItem        => '/PaymentItemInfo/Auction/multiItem',
-                     }
-                    );
+            PII_BuyerID     => '/PaymentItemInfo/Auction/BuyerID',
+            PII_ClosingDate => '/PaymentItemInfo/Auction/ClosingDate',
+            PII_multiItem   => '/PaymentItemInfo/Auction/multiItem',
+        }
+    );
 
     ## multiple payment items
-    my $paymentitems = $self->getFieldsList( $som, $path . '/PaymentItemInfo/PaymentItem',
-                                             { SalesTax => 'SalesTax',
-                                               Name     => 'Name',
-                                               Number   => 'Number',
-                                               Quantity => 'Quantity',
-                                               Amount   => 'Amount',
-                                               Options  => 'Options',
-                                             } );
+    my $paymentitems = $self->getFieldsList(
+        $som,
+        $path . '/PaymentItemInfo/PaymentItem',
+        {   SalesTax => 'SalesTax',
+            Name     => 'Name',
+            Number   => 'Number',
+            Quantity => 'Quantity',
+            Amount   => 'Amount',
+            Options  => 'Options',
+        }
+    );
 
-    if( scalar(@$paymentitems) > 0 ) {
+    if ( scalar( @$paymentitems ) > 0 ) {
         $response{PaymentItems} = $paymentitems;
     }
 

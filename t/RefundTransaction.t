@@ -1,6 +1,7 @@
 use Test::More;
-if( ! $ENV{WPP_TEST} || ! -f $ENV{WPP_TEST} ) {
-    plan skip_all => 'No WPP_TEST env var set. Please see README to run tests';
+if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
+    plan skip_all =>
+        'No WPP_TEST env var set. Please see README to run tests';
 }
 else {
     plan tests => 2;
@@ -35,17 +36,20 @@ _TRANSID_
 
 print STDERR "\nType or paste that Transaction ID here and hit Enter: \n";
 
-my $transid = <STDIN>; chomp $transid;
+my $transid = <STDIN>;
+chomp $transid;
 
 die "Need a transaction id.\n" unless $transid;
 
-my %resp = $pp->RefundTransaction( TransactionID => $transid,
-                                   RefundType    => 'Full',
-                                   Memo          => 'Fancy refund time.' );
+my %resp = $pp->RefundTransaction(
+    TransactionID => $transid,
+    RefundType    => 'Full',
+    Memo          => 'Fancy refund time.'
+);
 
-like( $resp{Ack}, qr/Success/ , "Successful refund." );
+like( $resp{Ack}, qr/Success/, "Successful refund." );
 
-if( $resp{Ack} ) {
+if ( $resp{Ack} ) {
     print STDERR <<"_REFUND_";
 
 You may now login to your Business sandbox account and verify the

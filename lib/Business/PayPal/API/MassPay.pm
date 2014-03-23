@@ -7,7 +7,7 @@ use warnings;
 use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
-our @ISA = qw(Business::PayPal::API);
+our @ISA       = qw(Business::PayPal::API);
 our @EXPORT_OK = qw( MassPay );
 
 sub MassPay {
@@ -20,20 +20,26 @@ sub MassPay {
     $args{MassPayItems} ||= [];
     $args{Version}      ||= "1.0";
 
-    my %types = ( EmailSubject => 'xs:string',
-                  Version      => 'xsd:string',
-#                  ReceiverType => 'ebl:ReceiverInfoCodeType',  ## EmailAddress | UserID
-                );
+    my %types = (
+        EmailSubject => 'xs:string',
+        Version      => 'xsd:string',
 
-    my %attr = ( Version => { xmlns => $self->C_xmlns_ebay },
-                 Amount  => { currencyID => $args{currencyID} }, );
+#                  ReceiverType => 'ebl:ReceiverInfoCodeType',  ## EmailAddress | UserID
+    );
+
+    my %attr = (
+        Version => { xmlns      => $self->C_xmlns_ebay },
+        Amount  => { currencyID => $args{currencyID} },
+    );
 
     ## mass pay item
-    my %mpi_type = ( ReceiverEmail => 'ebl:EmailAddressType',
-                     ReceiverID    => 'xs:string',
-                     Amount        => 'ebl:BasicAmountType',
-                     UniqueId      => 'xs:string',
-                     Note          => 'xs:string', );
+    my %mpi_type = (
+        ReceiverEmail => 'ebl:EmailAddressType',
+        ReceiverID    => 'xs:string',
+        Amount        => 'ebl:BasicAmountType',
+        UniqueId      => 'xs:string',
+        Note          => 'xs:string',
+    );
 
     my @recipients = @{ $args{MassPayItems} };
 
@@ -41,15 +47,19 @@ sub MassPay {
 
     for my $type ( sort keys %types ) {
         next unless $args{$type};
-        if( $attr{$type} ) {
-            push @masspay, SOAP::Data->name( $type => $args{$type} )->type($types{$type})->attr( { %{ $attr{$type} } } );
+        if ( $attr{$type} ) {
+            push @masspay,
+                SOAP::Data->name( $type => $args{$type} )
+                ->type( $types{$type} )->attr( { %{ $attr{$type} } } );
         }
         else {
-            push @masspay, SOAP::Data->name( $type => $args{$type} )->type($types{$type});
+            push @masspay,
+                SOAP::Data->name( $type => $args{$type} )
+                ->type( $types{$type} );
         }
     }
 
-    if( $args{ReceiverType} eq 'UserID' ) {
+    if ( $args{ReceiverType} eq 'UserID' ) {
         delete $mpi_type{ReceiverEmail};
     }
 
@@ -61,30 +71,36 @@ sub MassPay {
         my @rcpt = ();
         for my $type ( keys %mpi_type ) {
             next unless $mpi_type{$type};
-            if( $attr{$type} ) {
-                push @rcpt, SOAP::Data->name( $type => $rcpt->{$type} )->type($mpi_type{$type})->attr( { %{ $attr{$type} } } );
+            if ( $attr{$type} ) {
+                push @rcpt,
+                    SOAP::Data->name( $type => $rcpt->{$type} )
+                    ->type( $mpi_type{$type} )->attr( { %{ $attr{$type} } } );
             }
 
             else {
-                push @rcpt, SOAP::Data->name( $type => $rcpt->{$type} )->type($mpi_type{$type});
+                push @rcpt,
+                    SOAP::Data->name( $type => $rcpt->{$type} )
+                    ->type( $mpi_type{$type} );
             }
         }
 
-        push @masspay, SOAP::Data->name( MassPayItem => \SOAP::Data->value( @rcpt ) )->type("ns:MassPayRequestItemType");
+        push @masspay,
+            SOAP::Data->name( MassPayItem => \SOAP::Data->value( @rcpt ) )
+            ->type( "ns:MassPayRequestItemType" );
     }
 
-    my $request = SOAP::Data->name
-      ( MassPayRequest => \SOAP::Data->value( @masspay ) )
-        ->type("ns:MassPayRequestType");
+    my $request
+        = SOAP::Data->name( MassPayRequest => \SOAP::Data->value( @masspay ) )
+        ->type( "ns:MassPayRequestType" );
 
     my $som = $self->doCall( MassPayReq => $request )
-      or return;
+        or return;
 
     my $path = '/Envelope/Body/MassPayResponse';
 
     my %response = ();
-    unless( $self->getBasic($som, $path, \%response) ) {
-        $self->getErrors($som, $path, \%response);
+    unless ( $self->getBasic( $som, $path, \%response ) ) {
+        $self->getErrors( $som, $path, \%response );
         return %response;
     }
 

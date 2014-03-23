@@ -5,52 +5,57 @@ use strict;
 use warnings;
 
 use SOAP::Lite 0.67;
+
 #use SOAP::Lite +trace => 'debug';
 use Business::PayPal::API ();
 
-our @ISA = qw(Business::PayPal::API);
+our @ISA       = qw(Business::PayPal::API);
 our @EXPORT_OK = qw(DoAuthorizationRequest);
 
 sub DoAuthorizationRequest {
     my $self = shift;
     my %args = @_;
 
-    my %types = ( TransactionID => 'xs:string',
-          Amount        => 'ebl:BasicAmountType',);
-
+    my %types = (
+        TransactionID => 'xs:string',
+        Amount        => 'ebl:BasicAmountType',
+    );
 
     $args{currencyID} ||= 'USD';
 
-    my @ref_trans = 
-       ($self->version_req,
-    SOAP::Data->name( TransactionID => $args{TransactionID} )->type($types{TransactionID}),);
+    my @ref_trans = (
+        $self->version_req,
+        SOAP::Data->name( TransactionID => $args{TransactionID} )
+            ->type( $types{TransactionID} ),
+    );
 
     push @ref_trans,
-    SOAP::Data->name( Amount => $args{Amount} )
-    ->type( $types{Amount} )
-    ->attr( { currencyID => $args{currencyID} } );
+        SOAP::Data->name( Amount => $args{Amount} )->type( $types{Amount} )
+        ->attr( { currencyID => $args{currencyID} } );
 
-
-
-    my $request = SOAP::Data->name
-      ( DoAuthorizationRequest => \SOAP::Data->value( @ref_trans ) )
-        ->type("ns:AuthorizationRequestType");
+    my $request
+        = SOAP::Data->name(
+        DoAuthorizationRequest => \SOAP::Data->value( @ref_trans ) )
+        ->type( "ns:AuthorizationRequestType" );
 
     my $som = $self->doCall( DoAuthorizationReq => $request )
-      or return;
+        or return;
 
     my $path = '/Envelope/Body/DoAuthorizationResponse';
 
     my %response = ();
-    unless( $self->getBasic($som, $path, \%response) ) {
-        $self->getErrors($som, $path, \%response);
+    unless ( $self->getBasic( $som, $path, \%response ) ) {
+        $self->getErrors( $som, $path, \%response );
         return %response;
     }
 
-    $self->getFields($som, $path, \%response,
-                     { TransactionID => 'TransactionID',
-                       Amount     => 'Amount', }
-                    );
+    $self->getFields(
+        $som, $path,
+        \%response,
+        {   TransactionID => 'TransactionID',
+            Amount        => 'Amount',
+        }
+    );
 
     return %response;
 }

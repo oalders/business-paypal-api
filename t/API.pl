@@ -1,3 +1,4 @@
+
 =pod
 
 The tester must supply their own PayPal sandbox seller authentication
@@ -13,33 +14,34 @@ variable:
 =cut
 
 sub do_args {
-    unless( $ENV{WPP_TEST} && -f $ENV{WPP_TEST} ) {
-        die "See the TESTING section in `perldoc Business::PayPal::API documentation`\n";
+    unless ( $ENV{WPP_TEST} && -f $ENV{WPP_TEST} ) {
+        die
+            "See the TESTING section in `perldoc Business::PayPal::API documentation`\n";
         exit;
     }
 
     my %args = ();
     open FILE, "<", $ENV{WPP_TEST}
-      or die "Could not open $ENV{WPP_TEST}: $!\n";
+        or die "Could not open $ENV{WPP_TEST}: $!\n";
 
     my @variables = qw( Username Password Signature Subject timeout
-	                CertFile KeyFile PKCS12File PKCS12Password
-		        BuyerEmail
-		      );
+        CertFile KeyFile PKCS12File PKCS12Password
+        BuyerEmail
+    );
 
     my %patterns = ();
-    @patterns{map { qr/^$_\b/i } @variables} = @variables;
+    @patterns{ map {qr/^$_\b/i} @variables } = @variables;
 
-    while( <FILE> ) {
+    while ( <FILE> ) {
         chomp;
 
-     MATCH: for my $pat (keys %patterns) {
-        next unless $_ =~ $pat;
-        (my $value = $_) =~ s/$pat\s*=\s*(.+)/$1/;
-        $args{ $patterns{$pat} } = $value;
-        delete $patterns{$pat};
-        last MATCH;
-      }
+    MATCH: for my $pat ( keys %patterns ) {
+            next unless $_ =~ $pat;
+            ( my $value = $_ ) =~ s/$pat\s*=\s*(.+)/$1/;
+            $args{ $patterns{$pat} } = $value;
+            delete $patterns{$pat};
+            last MATCH;
+        }
     }
 
     close FILE;

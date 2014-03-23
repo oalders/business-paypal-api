@@ -1,7 +1,8 @@
 # -*- mode: cperl -*-
 use Test::More;
-if( ! $ENV{WPP_TEST} || ! -f $ENV{WPP_TEST} ) {
-    plan skip_all => 'No WPP_TEST env var set. Please see README to run tests';
+if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
+    plan skip_all =>
+        'No WPP_TEST env var set. Please see README to run tests';
 }
 else {
     plan tests => 3;
@@ -14,31 +15,32 @@ require 't/API.pl';
 
 my %args = do_args();
 
-my $pp = new Business::PayPal::API::RecurringPayments(%args);
+my $pp = new Business::PayPal::API::RecurringPayments( %args );
 
 #$Business::PayPal::API::Debug = 1;
-my %response = $pp->SetCustomerBillingAgreement
-  (
-   BillingType => 'RecurringPayments',
-   BillingAgreementDescription => '10.00 per month for 1 year',
-   ReturnURL  => 'http://www.google.com/',
-   CancelURL  => 'http://www.google.com/', 
-   BuyerEmail => $args{BuyerEmail},
-  );
+my %response = $pp->SetCustomerBillingAgreement(
+    BillingType                 => 'RecurringPayments',
+    BillingAgreementDescription => '10.00 per month for 1 year',
+    ReturnURL                   => 'http://www.google.com/',
+    CancelURL                   => 'http://www.google.com/',
+    BuyerEmail                  => $args{BuyerEmail},
+);
+
 #$Business::PayPal::API::Debug = 0;
 
 my $token = $response{Token};
 
 ok( $token, "Got token" );
-like( $response{Ack}, qr/Success/ , "SetCustomerBillingAgreement successful" );
+like( $response{Ack}, qr/Success/, "SetCustomerBillingAgreement successful" );
 
 exit;
 
-die "No token from PayPal! Check your authentication information and try again."
-  unless $token;
+die
+    "No token from PayPal! Check your authentication information and try again."
+    unless $token;
 
-
-my $pp_url = "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_customer-billing-agreement&token=$token";
+my $pp_url
+    = "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_customer-billing-agreement&token=$token";
 
 =pod
 
@@ -68,11 +70,10 @@ die "Need a PayerID.\n" unless $payerid;
 
 =cut
 
-
 ## CreateRecurringPaymentsProfile
 #$Business::PayPal::API::Debug = 1;
-my %profile = $pp->CreateRecurringPaymentsProfile
-  ( Token => $token,
+my %profile = $pp->CreateRecurringPaymentsProfile(
+    Token => $token,
 
     ## RecurringPaymentProfileDetails
     SubscriberName => 'Joe Schmoe',
@@ -91,7 +92,7 @@ my %profile = $pp->CreateRecurringPaymentsProfile
     ## ScheduleDetails
     Description => '12 Month Hosting Package: We Love You!',
 
-    InitialAmount     => '12.34',
+    InitialAmount => '12.34',
 
     TrialBillingPeriod      => 'Month',
     TrialBillingFrequency   => 1,
@@ -107,17 +108,17 @@ my %profile = $pp->CreateRecurringPaymentsProfile
     PaymentShippingAmount     => 0.00,
     PaymentTaxAmount          => 0.00,
 
-#    MaxFailedPayments         => 1,
-#    AutoBillOutstandingAmount => 'AddToNextBilling',
-  );
+    #    MaxFailedPayments         => 1,
+    #    AutoBillOutstandingAmount => 'AddToNextBilling',
+);
 
 #$Business::PayPal::API::Debug = 0;
-
 
 ## GetBillingAgreementCustomerDetails
 #$Business::PayPal::API::Debug = 1;
-my %details = $pp->GetBillingAgreementCustomerDetails($token);
+my %details = $pp->GetBillingAgreementCustomerDetails( $token );
+
 #$Business::PayPal::API::Debug = 0;
 
-like( $details{Ack}, qr/Success/ , "details ok" );
+like( $details{Ack}, qr/Success/, "details ok" );
 

@@ -7,8 +7,8 @@ use warnings;
 use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
-our @ISA         = qw(Business::PayPal::API);
-our @EXPORT_OK   = qw(GetBalance);              ## fake exporter
+our @ISA       = qw(Business::PayPal::API);
+our @EXPORT_OK = qw(GetBalance);              ## fake exporter
 
 sub GetBalance {
     my $self = shift;

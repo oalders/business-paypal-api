@@ -1,6 +1,7 @@
 use Test::More;
-if( ! $ENV{WPP_TEST} || ! -f $ENV{WPP_TEST} ) {
-    plan skip_all => 'No WPP_TEST env var set. Please see README to run tests';
+if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
+    plan skip_all =>
+        'No WPP_TEST env var set. Please see README to run tests';
 }
 else {
     plan tests => 2;
@@ -34,11 +35,12 @@ _TRANSID_
 
 print STDERR "\nType or paste that Transaction ID here and hit Enter: \n";
 
-my $transid = <STDIN>; chomp $transid;
+my $transid = <STDIN>;
+chomp $transid;
 
 die "Need a transaction id.\n" unless $transid;
 
 #$Business::PayPal::API::Debug = 1;
 my %resp = $pp->GetTransactionDetails( TransactionID => $transid );
 
-like( $resp{Ack}, qr/Success/ , "transaction received" );
+like( $resp{Ack}, qr/Success/, "transaction received" );

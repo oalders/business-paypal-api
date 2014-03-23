@@ -1,6 +1,7 @@
 use Test::More;
-if( ! $ENV{WPP_TEST} || ! -f $ENV{WPP_TEST} ) {
-    plan skip_all => 'No WPP_TEST env var set. Please see README to run tests';
+if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
+    plan skip_all =>
+        'No WPP_TEST env var set. Please see README to run tests';
 }
 else {
     plan tests => 2;
@@ -12,7 +13,7 @@ use_ok( 'Business::PayPal::API::TransactionSearch' );
 require 't/API.pl';
 
 my %args = do_args();
-my $pp = new Business::PayPal::API::TransactionSearch( %args );
+my $pp   = new Business::PayPal::API::TransactionSearch( %args );
 
 print STDERR <<"_TRANSID_";
 
@@ -36,15 +37,17 @@ _TRANSID_
 
 print STDERR "\nType or paste that Transaction ID here and hit Enter: \n";
 
-my $transid = <STDIN>; chomp $transid;
+my $transid = <STDIN>;
+chomp $transid;
 
 die "Need a transaction id.\n" unless $transid;
 
 my $startdate = '1998-01-01T01:45:10.00Z';
 
 #$Business::PayPal::API::Debug = 1;
-my $resp = $pp->TransactionSearch( StartDate    => $startdate,
-				   TransactionID => $transid,
-				 );
-ok( scalar @$resp , "Matching Transactions Found");
+my $resp = $pp->TransactionSearch(
+    StartDate     => $startdate,
+    TransactionID => $transid,
+);
+ok( scalar @$resp, "Matching Transactions Found" );
 

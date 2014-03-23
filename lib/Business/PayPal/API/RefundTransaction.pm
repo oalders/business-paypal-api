@@ -7,60 +7,67 @@ use warnings;
 use SOAP::Lite 0.67;
 use Business::PayPal::API ();
 
-our @ISA = qw(Business::PayPal::API);
+our @ISA       = qw(Business::PayPal::API);
 our @EXPORT_OK = qw(RefundTransaction);
 
 sub RefundTransaction {
     my $self = shift;
     my %args = @_;
 
-    my %types = ( TransactionID => 'xs:string',
-		  RefundType    => '',                    ## Other | Full | Partial
-		  Amount        => 'ebl:BasicAmountType',
-		  Memo          => 'xs:string', );
+    my %types = (
+        TransactionID => 'xs:string',
+        RefundType    => '',                      ## Other | Full | Partial
+        Amount        => 'ebl:BasicAmountType',
+        Memo          => 'xs:string',
+    );
 
     $args{currencyID} ||= 'USD';
     $args{RefundType} ||= 'Full';
 
-    my @ref_trans = 
-      (
-       $self->version_req,
-       SOAP::Data->name( TransactionID => $args{TransactionID} )->type($types{TransactionID}),
-       SOAP::Data->name( RefundType => $args{RefundType} )->type($types{RefundType}),
-      );
+    my @ref_trans = (
+        $self->version_req,
+        SOAP::Data->name( TransactionID => $args{TransactionID} )
+            ->type( $types{TransactionID} ),
+        SOAP::Data->name( RefundType => $args{RefundType} )
+            ->type( $types{RefundType} ),
+    );
 
-    if( $args{RefundType} ne 'Full' && $args{Amount} ) {
-	push @ref_trans,
-	  SOAP::Data->name( Amount => $args{Amount} )
-	      ->type( $types{Amount} )
-		->attr( { currencyID => $args{currencyID} } )
+    if ( $args{RefundType} ne 'Full' && $args{Amount} ) {
+        push @ref_trans,
+            SOAP::Data->name( Amount => $args{Amount} )
+            ->type( $types{Amount} )
+            ->attr( { currencyID => $args{currencyID} } );
     }
 
     push @ref_trans,
-      SOAP::Data->name( Memo => $args{Memo} )->type( $types{Memo} )
-	  if $args{Memo};
+        SOAP::Data->name( Memo => $args{Memo} )->type( $types{Memo} )
+        if $args{Memo};
 
-    my $request = SOAP::Data->name
-      ( RefundTransactionRequest => \SOAP::Data->value( @ref_trans ) )
-	->type("ns:RefundTransactionRequestType");
+    my $request
+        = SOAP::Data->name(
+        RefundTransactionRequest => \SOAP::Data->value( @ref_trans ) )
+        ->type( "ns:RefundTransactionRequestType" );
 
     my $som = $self->doCall( RefundTransactionReq => $request )
-      or return;
+        or return;
 
     my $path = '/Envelope/Body/RefundTransactionResponse';
 
     my %response = ();
-    unless( $self->getBasic($som, $path, \%response) ) {
-        $self->getErrors($som, $path, \%response);
+    unless ( $self->getBasic( $som, $path, \%response ) ) {
+        $self->getErrors( $som, $path, \%response );
         return %response;
     }
 
-    $self->getFields($som, $path, \%response,
-                     { RefundTransactionID => 'RefundTransactionID',
-                       FeeRefundAmount     => 'FeeRefundAmount',
-                       NetRefundAmount     => 'NetRefundAmount',
-                       GrossRefundAmount   => 'GrossRefundAmount', }
-                    );
+    $self->getFields(
+        $som, $path,
+        \%response,
+        {   RefundTransactionID => 'RefundTransactionID',
+            FeeRefundAmount     => 'FeeRefundAmount',
+            NetRefundAmount     => 'NetRefundAmount',
+            GrossRefundAmount   => 'GrossRefundAmount',
+        }
+    );
 
     return %response;
 }
