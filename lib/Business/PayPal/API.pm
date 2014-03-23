@@ -4,10 +4,11 @@ use 5.008001;
 use strict;
 use warnings;
 
+use Data::Printer;
 use SOAP::Lite 0.67;    # +trace => 'all';
 use Carp qw(carp);
 
-our $Debug = 0;
+our $Debug = $ENV{WPP_DEBUG} || 0;
 
 ## NOTE: This package exists only until I can figure out how to use
 ## NOTE: SOAP::Lite's WSDL support for complex types and importing
@@ -151,9 +152,6 @@ sub doCall {
                 "\n";
         }
 
-        #	$Soap{$self}->readable( $Debug );
-        #	$Soap{$self}->outputxml( $Debug );
-
         no warnings 'redefine';
         local *SOAP::Deserializer::typecast = sub { shift; return shift };
         eval {
@@ -168,8 +166,7 @@ sub doCall {
 
     if ( $Debug ) {
         ## FIXME: would be nicer to dump a SOM to XML, but how to do that?
-        require Data::Dumper;
-        print STDERR Data::Dumper::Dumper( $som->envelope );
+        p( $som->envelope );
     }
 
     if ( ref( $som ) && $som->fault ) {
@@ -363,8 +360,8 @@ invoke the various methods, instead of creating a new object for each
 subclass. Here is an example of a B<API> object used to invoke various
 PayPal APIs with the same object:
 
-  use Business::PayPal::API qw( GetTransactionDetails 
-                                TransactionSearch 
+  use Business::PayPal::API qw( GetTransactionDetails
+                                TransactionSearch
                                 RefundTransaction );
   my $pp = new Business::PayPal::API( ... );
   my $records = $pp->TransactionSearch( ... );
@@ -580,6 +577,9 @@ sure:
    * you're not trying to use your live username and password for
      sandbox testing and vice versa.
 
+   * you are using a US Business Sandbox account.  you may also need to have
+     "PayPal Payments Pro" enabled.
+
    * if the sandbox works but "live" does not, make sure you've turned
      off the 'sandbox' parameter correctly. Otherwise you'll be
      passing your PayPal sandbox credentials to PayPal's live site
@@ -599,10 +599,10 @@ sure:
 
          ## delete all HTTPS, SSL env
          delete $ENV{$_} for grep { /^(HTTPS|SSL)/ } keys %ENV;
-         
+
          ## now put our own HTTPS env back in
          $ENV{HTTPS_CERT_FILE} = '/var/path/to/cert.pem';
-         
+
          ## create our paypal object
          my $pp = new Business::PayPal::API...
 

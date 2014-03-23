@@ -1,7 +1,9 @@
 #!/usr/bin/perl
+
 use strict;
 use warnings;
-use Test::More;
+
+use Test::Most;
 
 if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
     plan skip_all =>
