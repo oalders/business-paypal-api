@@ -301,32 +301,36 @@ Business::PayPal::API - PayPal API
 
 =head1 SYNOPSIS
 
-  use Business::PayPal::API qw( ExpressCheckout GetTransactionDetails );
+    use Business::PayPal::API qw( ExpressCheckout GetTransactionDetails );
 
-  ## certificate authentication
-  my $pp = new Business::PayPal::API
-            ( Username       => 'my_api1.domain.tld',
-              Password       => 'this_is_my_password',
-              PKCS12File     => '/path/to/cert.pkcs12',
-              PKCS12Password => '(pkcs12 password)',
-              sandbox        => 1 );
+    ## certificate authentication
+    my $pp = Business::PayPal::API->new(
+        Username       => 'my_api1.domain.tld',
+        Password       => 'this_is_my_password',
+        PKCS12File     => '/path/to/cert.pkcs12',
+        PKCS12Password => '(pkcs12 password)',
+        sandbox        => 1,
+    );
 
-  ## PEM cert authentication
-  my $pp = new Business::PayPal::API
-            ( Username    => 'my_api1.domain.tld',
-              Password    => 'this_is_my_password',
-              CertFile    => '/path/to/cert.pem',
-              KeyFile     => '/path/to/cert.pem',
-              sandbox     => 1 );
+    ## PEM cert authentication
+    my $pp = Business::PayPal::API->new(
+        Username => 'my_api1.domain.tld',
+        Password => 'this_is_my_password',
+        CertFile => '/path/to/cert.pem',
+        KeyFile  => '/path/to/cert.pem',
+        sandbox  => 1,
+    );
 
-  ## 3-token (Signature) authentication
-  my $pp = new Business::PayPal::API
-            ( Username   => 'my_api1.domain.tld',
-              Password   => 'Xdkis9k3jDFk39fj29sD9',  ## supplied by PayPal
-              Signature  => 'f7d03YCpEjIF3s9Dk23F2V1C1vbYYR3ALqc7jm0UrCcYm-3ksdiDwjfSeii',  ## ditto
-              sandbox    => 1 );
+    ## 3-token (Signature) authentication
+    my $pp = Business::PayPal::API->new(
+        Username => 'my_api1.domain.tld',
+        Password => 'Xdkis9k3jDFk39fj29sD9',    ## supplied by PayPal
+        Signature =>
+            'f7d03YCpEjIF3s9Dk23F2V1C1vbYYR3ALqc7jm0UrCcYm-3ksdiDwjfSeii', ## ditto
+        sandbox => 1,
+    );
 
-  my %response = $pp->SetExpressCheckout( ... );
+    my %response = $pp->SetExpressCheckout( ... );
 
 
 =head1 DESCRIPTION
@@ -345,13 +349,13 @@ This allows for much more concise and intuitive usage. For example,
 these two statements are equivalent:
 
   use Business::PayPal::API::RefundTransaction;
-  my $pp = new Business::PayPal::API::RefundTransaction( ... );
+  my $pp = Business::PayPal::API::RefundTransaction->new( ... );
   $pp->RefundTransaction( ... );
 
 and more concisely:
 
   use Business::PayPal::API qw( RefundTransaction );
-  my $pp = new Business::PayPal::API( ... );
+  my $pp = Business::PayPal::API->new( ... );
   $pp->RefundTransaction( ... );
 
 The advantage of this becomes clear when you need to use multiple API
@@ -363,7 +367,7 @@ PayPal APIs with the same object:
   use Business::PayPal::API qw( GetTransactionDetails
                                 TransactionSearch
                                 RefundTransaction );
-  my $pp = new Business::PayPal::API( ... );
+  my $pp = Business::PayPal::API->new( ... );
   my $records = $pp->TransactionSearch( ... );
 
   my %details = $pp->GetTransactionDetails( ... );
@@ -604,7 +608,7 @@ sure:
          $ENV{HTTPS_CERT_FILE} = '/var/path/to/cert.pem';
 
          ## create our paypal object
-         my $pp = new Business::PayPal::API...
+         my $pp = Business::PayPal::API->new(...)
 
    * if you have already loaded Net::SSLeay (or IO::Socket::SSL), then
      Net::HTTPS will prefer to use IO::Socket::SSL. I don't know how
@@ -709,14 +713,14 @@ That is, B<Business::PayPal::API> will import any subroutine into its
 own namespace from the B<@EXPORT_OK> array. Now it can be used like this:
 
   use Business::PayPal::API qw( SomeAPI );
-  my $pp = new Business::PayPal::API( ... );
+  my $pp = Business::PayPal::API->new( ... );
   $pp->SomeAPIMethod( ... );
 
 Of course, we also do a 'use Business::PayPal::API' in the module so
 that it can be used as a standalone module, if necessary:
 
   use Business::PayPal::API::SomeAPI;
-  my $pp = new Business::PayPal::API::SomeAPI( ... ); ## same args as superclass
+  my $pp = Business::PayPal::API::SomeAPI->new( ... ); ## same args as superclass
   $pp->SomeAPIMethod( ... );
 
 Adding the B<@EXPORT_OK> array in your module allows your module to be
