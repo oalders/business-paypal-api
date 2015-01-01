@@ -26,7 +26,7 @@ sub do_args {
 
     my @variables = qw( Username Password Signature Subject timeout
         CertFile KeyFile PKCS12File PKCS12Password
-        BuyerEmail
+        BuyerEmail SellerEmail
     );
 
     my %patterns = ();
