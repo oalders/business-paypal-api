@@ -10,7 +10,7 @@ if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
         'No WPP_TEST env var set. Please see README to run tests';
 }
 else {
-    plan tests => 6;
+    plan tests => 14;
 }
 
 use_ok( 'Business::PayPal::API::TransactionSearch' );
@@ -75,10 +75,14 @@ foreach my $record (@{$resp}) {
 like($detail{PaymentItems}[0]{Name}, qr/Field\s+Options/i, 'Found field options test transaction');
 like($detail{PII_Name}, qr/Field\s+Options/i, 'Found field options test transaction');
 
-foreach my $options ($detail{PaymentItems}[0]{Options}, $detail{PII_Options}) {
-    ok((scalar(@$options) == 2 and $options->[0] eq '' and $options->[0] eq ''),
-       "PaymentItems's Options has 2 elements with empty strings");
+foreach my $options ($detail{PaymentItems}[0]{Options}, $detail{PII_Options}[0]) {
+    ok(scalar(keys %$options) == 2, "The PaymentItems Options has 2 elements");
+    ok(defined $options->{firstOption}, "'firstOption' is present");
+    ok($options->{firstOption} eq 'Yes', "'firstOption' is selected as 'Yes'");
+    ok(defined $options->{size}, "'size' option is present");
+    ok($options->{size} eq "Large", "'size' option is selected as 'Large'");
 }
+
 # Local Variables:
 #   Mode: CPerl
 #   indent-tabs-mode: nil
