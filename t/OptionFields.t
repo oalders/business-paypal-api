@@ -69,14 +69,23 @@ my $td   = new Business::PayPal::API::GetTransactionDetails( %args );
 my $resp = $ts->TransactionSearch(StartDate     => $startdate);
 my %detail;
 foreach my $record (@{$resp}) {
-  %detail = $td->GetTransactionDetails(TransactionID => $record->{TransactionID});
-  last if $detail{PII_Name} =~ /Field\s+Options/i;
+    %detail = $td->GetTransactionDetails(TransactionID => $record->{TransactionID});
+    last if $detail{PII_Name} =~ /Field\s+Options/i;
 }
 like($detail{PaymentItems}[0]{Name}, qr/Field\s+Options/i, 'Found field options test transaction');
 like($detail{PII_Name}, qr/Field\s+Options/i, 'Found field options test transaction');
 
 foreach my $options ($detail{PaymentItems}[0]{Options}, $detail{PII_Options}) {
-  ok((scalar(@$options) == 2 and $options->[0] eq '' and $options->[0] eq ''),
-     "PaymentItems's Options has 2 elements with empty strings");
+    ok((scalar(@$options) == 2 and $options->[0] eq '' and $options->[0] eq ''),
+       "PaymentItems's Options has 2 elements with empty strings");
 }
+# Local Variables:
+#   Mode: CPerl
+#   indent-tabs-mode: nil
+#   cperl-indent-level: 4
+#   cperl-brace-offset: 0
+#   cperl-continued-brace-offset: 0
+#   cperl-label-offset: -4
+#   cperl-continued-statement-offset: 4
+# End:
 
