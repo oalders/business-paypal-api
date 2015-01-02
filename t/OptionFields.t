@@ -2,6 +2,7 @@
 # -*- mode: cperl -*-
 use Test::More;
 use strict;
+use Cwd;
 if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
     plan skip_all =>
         'No WPP_TEST env var set. Please see README to run tests';
@@ -47,7 +48,7 @@ _OPTIONS_PAYMENT_DATA_
   ;
 close(OPTIONS_PAY_HTML); die "unable to write options-payment.html: $!" if ($? != 0);
 
-use Cwd; my $cwd = getcwd;
+my $cwd = getcwd;
 
 print STDERR <<"_OPTIONS_LINK_";
 Please note the next series of tests will not succeeed unless there is at
