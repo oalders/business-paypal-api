@@ -2,7 +2,9 @@
 # -*- mode: cperl -*-
 use Test::More;
 use strict;
+use autodie qw(:all);
 use Cwd;
+
 if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
     plan skip_all =>
         'No WPP_TEST env var set. Please see README to run tests';
@@ -26,9 +28,7 @@ These tests verify the options work.
 
 =cut
 
-
-open(OPTIONS_PAY_HTML, ">", "options-payment.html")
-  or die "unable to open options-payment.html: $!";
+open(OPTIONS_PAY_HTML, ">", "options-payment.html");
 print OPTIONS_PAY_HTML <<_OPTIONS_PAYMENT_DATA_
 <html>
 <body>
@@ -46,7 +46,7 @@ print OPTIONS_PAY_HTML <<_OPTIONS_PAYMENT_DATA_
 </form></body></html>
 _OPTIONS_PAYMENT_DATA_
   ;
-close(OPTIONS_PAY_HTML); die "unable to write options-payment.html: $!" if ($? != 0);
+close(OPTIONS_PAY_HTML);
 
 my $cwd = getcwd;
 
