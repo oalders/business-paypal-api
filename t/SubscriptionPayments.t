@@ -2,6 +2,7 @@
 use Test::More;
 use strict;
 use autodie qw(:all);
+use Cwd;
 
 if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
     plan skip_all =>
@@ -59,7 +60,7 @@ _SUBSCRIPTION_PAYMENT_DATA_
   ;
 close(SUBSCRIPTION_PAY_HTML);
 
-use Cwd; my $cwd = getcwd;
+my $cwd = getcwd;
 
 print STDERR <<"_PROFILEID_";
 Please note the next series of tests will not succeeed unless there is at
