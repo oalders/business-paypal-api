@@ -301,3 +301,13 @@ at your option, any later version of Perl 5 you may have available.
 
 
 =cut
+
+# Local Variables:
+#   Mode: CPerl
+#   indent-tabs-mode: nil
+#   cperl-indent-level: 4
+#   cperl-brace-offset: 0
+#   cperl-continued-brace-offset: 0
+#   cperl-label-offset: -4
+#   cperl-continued-statement-offset: 4
+# End:
