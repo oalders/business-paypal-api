@@ -1,6 +1,8 @@
 # -*- mode: cperl -*-
 use Test::More;
 use strict;
+use autodie qw(:all);
+
 if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
     plan skip_all =>
         'No WPP_TEST env var set. Please see README to run tests';
@@ -30,8 +32,8 @@ This works, and seems to be correct, albeit odd.
 
 =cut
 
-open(SUBSCRIPTION_PAY_HTML, ">", "subscription-payment.html")
-  or die "unable to open subscription-payment.html: $!";
+open(SUBSCRIPTION_PAY_HTML, ">", "subscription-payment.html");
+
 print SUBSCRIPTION_PAY_HTML <<_SUBSCRIPTION_PAYMENT_DATA_
 <html>
 <body>
@@ -55,7 +57,7 @@ print SUBSCRIPTION_PAY_HTML <<_SUBSCRIPTION_PAYMENT_DATA_
 </html>
 _SUBSCRIPTION_PAYMENT_DATA_
   ;
-close(SUBSCRIPTION_PAY_HTML); die "unable to write subscription-payment.html: $!" if ($? != 0);
+close(SUBSCRIPTION_PAY_HTML);
 
 use Cwd; my $cwd = getcwd;
 
