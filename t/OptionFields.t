@@ -7,7 +7,7 @@ if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
         'No WPP_TEST env var set. Please see README to run tests';
 }
 else {
-    plan tests => 4;
+    plan tests => 6;
 }
 
 use_ok( 'Business::PayPal::API::TransactionSearch' );
@@ -73,4 +73,9 @@ foreach my $record (@{$resp}) {
 }
 like($detail{PaymentItems}[0]{Name}, qr/Field\s+Options/i, 'Found field options test transaction');
 like($detail{PII_Name}, qr/Field\s+Options/i, 'Found field options test transaction');
+
+foreach my $options ($detail{PaymentItems}[0]{Options}, $detail{PII_Options}) {
+  ok((scalar(@$options) == 2 and $options->[0] eq '' and $options->[0] eq ''),
+     "PaymentItems's Options has 2 elements with empty strings");
+}
 
