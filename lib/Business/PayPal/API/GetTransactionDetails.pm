@@ -127,12 +127,43 @@ sub GetTransactionDetails {
             Number   => 'Number',
             Quantity => 'Quantity',
             Amount   => 'Amount',
-            Options  => 'Options',
         }
     );
 
     if ( scalar( @$paymentitems ) > 0 ) {
+        # Options data must be extracted differently.  Specifically, the
+        # "interesting" parts of the Options data is not in the values inside
+        # the $som structure (which means $som->valueof(), which
+        # $self->getFieldsList() above calls underneath, won't extract the
+        # useful data, because the values are empty.
+
+        # The convoluted loop below finds any Options values and matches them
+        # up properly with the correct PaymentItem.  Note that the loop is
+        # written this way to account for the fact that there may be multiple
+        # PaymentItems.
+
+        # Finally, I contemplated placing this loop below in getFieldsList()
+        # with a special-case for Options, but I am not sure it belongs
+        # there.  Ultimately, I think this is unique to the
+        # GetTransactionsDetails call in the API, and thus it's more
+        # appropriately placed here.
+        my $ii = 0;
+        my @fulloptions;
+        foreach my $rec ( $som->dataof($path . '/PaymentItemInfo/PaymentItem' ) ) {
+            my %options;
+            foreach my $subrec ($rec->value()) {
+                foreach my $fieldrec ($$subrec->value()) {
+                    $options{$fieldrec->attr()->{name}} = $fieldrec->attr()->{value}
+                        if ($fieldrec->name() eq "Options");
+                }
+            }
+            $paymentitems->[$ii]{Options} = \%options;
+            push(@fulloptions, \%options);
+        }
+        # Now, we can save the payment items properly
         $response{PaymentItems} = $paymentitems;
+        # And set the PII_Options properly too.
+        $response{PII_Options} = \@fulloptions;
     }
 
     return %response;
@@ -260,6 +291,7 @@ records:
                       Number   => '...',
                       Quantity => '...',
                       Amount   => '...',
+                      Options  => { 'key' => 'value', ... },
                     },
                     { SalesTax => ..., etc. 
                     } ]
@@ -272,6 +304,9 @@ Example:
   for my $item ( @{ $resp{PaymentItems} } ) {
       print "Name: " . $item->{Name} . "\n";
       print "Amt: " . $item->{Amount} . "\n";
+      for my $optionname (keys %$item->{Options}) {
+          print "Option: $optionname is " . $item->{Options}{$optionname} . "\n";
+      }
   }
 
 =head2 ERROR HANDLING
