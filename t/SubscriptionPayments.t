@@ -79,8 +79,6 @@ my $ts   = new Business::PayPal::API::TransactionSearch( %args );
 
 my $resp = $ts->TransactionSearch(StartDate => $startdate);
 
-use Data::Dumper;
-
 ok(scalar @{$resp} > 0, "Some transactions found");
 
 my($profileID, %possibleTransactionIDs);
