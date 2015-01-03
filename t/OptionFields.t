@@ -87,6 +87,7 @@ my %detail;
 foreach my $record (@{$resp}) {
     %detail = $td->GetTransactionDetails(TransactionID => $record->{TransactionID});
     last if $detail{PII_Name} =~ /$itemName/;
+    %detail = {};
 }
 like($detail{PaymentItems}[0]{Name}, qr/$itemName/, 'Found field options test transaction');
 like($detail{PII_Name}, qr/$itemName/, 'Found field options test transaction');
