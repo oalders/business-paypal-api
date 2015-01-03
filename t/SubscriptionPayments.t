@@ -1,8 +1,11 @@
 # -*- mode: cperl -*-
-use Test::More;
 use strict;
+use warnings;
 use autodie qw(:all);
+
 use Cwd;
+use List::AllUtils;
+use Test::More;
 
 if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
     plan skip_all =>
@@ -33,12 +36,12 @@ This works, and seems to be correct, albeit odd.
 
 =cut
 
-open(SUBSCRIPTION_PAY_HTML, ">", "subscription-payment.html");
+open SUBSCRIPTION_PAY_HTML, '>', 'subscription-payment.html';
 
 print SUBSCRIPTION_PAY_HTML <<_SUBSCRIPTION_PAYMENT_DATA_
 <html>
-<body>
-<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
+    <body>
+        <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
             <input type="hidden" name="business" value="$args{SellerEmail}" />
             <input type="hidden" name="item_name" value="Monthly Payment" />
             <input type="hidden" name="cmd" value="_xclick-subscriptions">
@@ -53,12 +56,12 @@ print SUBSCRIPTION_PAY_HTML <<_SUBSCRIPTION_PAYMENT_DATA_
             <input type="hidden" name="no_note" value="1">
             <input id="amount" type="text" name="a3" size="5" minimum="10" value="10" />
             <input type="image" border="0" name="submit" alt="Make test monthly payment now">
-</form>
-</body>
+        </form>
+    </body>
 </html>
 _SUBSCRIPTION_PAYMENT_DATA_
-  ;
-close(SUBSCRIPTION_PAY_HTML);
+    ;
+close SUBSCRIPTION_PAY_HTML;
 
 my $cwd = getcwd;
 
@@ -73,36 +76,44 @@ if you haven't made one yet, you can visit:
 and use the sandbox buyer account to make the payment.
 _PROFILEID_
 
-my $startdate = '1998-01-01T01:45:10.00Z';
+my $start_date = '1998-01-01T01:45:10.00Z';
 
-my $ts   = new Business::PayPal::API::TransactionSearch( %args );
+my $ts = Business::PayPal::API::TransactionSearch->new( %args );
 
-my $resp = $ts->TransactionSearch(StartDate => $startdate);
+my $resp = $ts->TransactionSearch( StartDate => $start_date );
 
-ok(scalar @{$resp} > 0, "Some transactions found");
+ok( scalar @{$resp} > 0, 'Some transactions found' );
 
-my($profileID, %possibleTransactionIDs);
-foreach my $record (@{$resp}) {
-  if ($record->{Type} =~ /Recurring/) {
-    if ($record->{Status} =~ /Completed/) {
-      $possibleTransactionIDs{$record->{TransactionID}} = $record;
-    } elsif ($record->{Status} =~ /Created/) {
-      $profileID = $record->{TransactionID};
+my ( $profileID, %possible_txn_ids );
+
+foreach my $record ( @{$resp} ) {
+    if ( $record->{Type} =~ /Recurring/ ) {
+        if ( $record->{Status} =~ /Completed/ ) {
+            $possible_txn_ids{ $record->{TransactionID} } = $record;
+        }
+        elsif ( $record->{Status} =~ /Created/ ) {
+            $profileID = $record->{TransactionID};
+        }
     }
-  }
 }
-ok(defined $profileID, "Subscription Payment Creation Record and ProfileID Found");
-ok(scalar(keys %possibleTransactionIDs) > 0, "Subscription Payment Transactions Found");
 
-$resp = $ts->TransactionSearch(StartDate => $startdate,
-                               ProfileID => $profileID);
+ok( defined $profileID,
+    'Subscription Payment Creation Record and ProfileID Found' );
+ok( scalar keys %possible_txn_ids > 0,
+    'Subscription Payment Transactions Found'
+);
 
-my $foundAtLeastOne = 0;
-foreach my $record (@{$resp}) {
-  # One of these will need to be in the possibleTransactionID list (i.e.,
-  # we're assuming that at least one payment has occured in this repeating).
-  if (defined $possibleTransactionIDs{$record->{TransactionID}}) {
-    $foundAtLeastOne = 1; last;
-  }
-}
-ok($foundAtLeastOne, "Found one payment transaction under the given Profile ID");
+my $date_search_res = $ts->TransactionSearch(
+    ProfileID => $profileID,
+    StartDate => $start_date,
+);
+
+# One of these will need to be in the possibleTransactionID list (i.e., we're
+# assuming that at least one payment has occured in this repeating).
+
+ok( List::AllUtils::any {
+        defined $possible_txn_ids{ $_->{TransactionID} }
+    }
+    @{$date_search_res},
+    'Found one payment transaction under the given Profile ID'
+);
