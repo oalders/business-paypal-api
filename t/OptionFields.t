@@ -56,7 +56,7 @@ if (defined $itemName) {
    <input type="hidden" name="os1" value="Yes" />
    <input type="hidden" name="on2" value="size"/>
    <input name="os2" id="os2" value="Large"/>
-   <input type="image" border="0" name="submit" alt="Submit Field Tester with $120 payment">
+   <input type="image" border="0" name="submit" alt="Submit Field Tester, $itemName, with \$120 payment">
 </form></body></html>
 _OPTIONS_PAYMENT_DATA_
         ;
