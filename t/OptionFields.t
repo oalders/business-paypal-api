@@ -56,6 +56,8 @@ if (defined $itemName) {
    <input type="hidden" name="os0" value="Yes" />
    <input type="hidden" name="on1" value="size"/>
    <input name="os1" id="os1" value="Large"/>
+   <input type="hidden" name="on2" value="lostOption"/>
+   <input name="os2" id="os2" value="NeverToBeSeen"/>
    <input type="image" border="0" name="submit" alt="Submit Field Tester, $itemName, with \$120 payment">
 </form></body></html>
 _OPTIONS_PAYMENT_DATA_
@@ -91,6 +93,25 @@ foreach my $record (@{$resp}) {
 }
 like($detail{PaymentItems}[0]{Name}, qr/$itemName/, 'Found field options test transaction');
 like($detail{PII_Name}, qr/$itemName/, 'Found field options test transaction');
+
+=pod
+
+Note that the tests below all pass when only two Options are found, even
+though our HTML file above passes through I<three> options.
+
+Yet, if you look at the transaction details in the PayPal sandbox web
+interface, you'll see that all three Options are present in its record
+description.  Thus, Options beyond the first two appears only partially
+supported by PayPal.
+
+Thus, our tests verify this fact by submitting three of these fields, but
+expecting only the first two back.
+
+More details on this can be found in the
+L<Business:PayPal:API:GetTransactionDetails/"PaymentItem Options Limitations">
+documentation.
+
+=cut
 
 foreach my $options ($detail{PaymentItems}[0]{Options}, $detail{PII_Options}[0]) {
     ok(scalar(keys %$options) == 2, "The PaymentItems Options has 2 elements");
