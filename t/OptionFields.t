@@ -16,6 +16,7 @@ else {
 use_ok( 'Business::PayPal::API::TransactionSearch' );
 use_ok( 'Business::PayPal::API::GetTransactionDetails' );
 
+sub rndStr{ join'', @_[ map{ rand @_ } 1 .. shift ] }
 #########################
 
 require 't/API.pl';
@@ -28,14 +29,27 @@ These tests verify the options work.
 
 =cut
 
-open(OPTIONS_PAY_HTML, ">", "options-payment.html");
-print OPTIONS_PAY_HTML <<_OPTIONS_PAYMENT_DATA_
+my $itemName;
+
+if (-f 'options-payment.html') {
+    open(OPTIONS_PAY_HTML_READ, "<", "options-payment.html");
+    while (my $line = <OPTIONS_PAY_HTML_READ>) {
+        $itemName = $1 if $line =~ /Field\s*Options\s*Tester:\s*([A-Z]+)/;
+    }
+    close OPTIONS_PAY_HTML_READ;
+}
+if (defined $itemName) {
+    print STDERR "Using existing test transaction with name \"$itemName\"\n";
+} else {
+    $itemName = rndStr(10, 'A' .. 'Z');
+    open(OPTIONS_PAY_HTML, ">", "options-payment.html");
+    print OPTIONS_PAY_HTML <<_OPTIONS_PAYMENT_DATA_
 <html>
 <body>
 <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
    <input type="hidden" name="cmd" value="_xclick" />
    <input type="hidden" name="business" value="$args{SellerEmail}" />
-   <input type="hidden" name="item_name" value="Field Options Tester" />
+   <input type="hidden" name="item_name" value="Field Options Tester: $itemName" />
    <input id="no_shipping" type="hidden" name="no_shipping" value="0" />
    <input id="amount" type="text" name="amount" size="7" minimum="120" value="120" />
    <input type="hidden" name="on1" value="firstOption" />
@@ -45,12 +59,11 @@ print OPTIONS_PAY_HTML <<_OPTIONS_PAYMENT_DATA_
    <input type="image" border="0" name="submit" alt="Submit Field Tester with $120 payment">
 </form></body></html>
 _OPTIONS_PAYMENT_DATA_
-  ;
-close(OPTIONS_PAY_HTML);
+        ;
+    close(OPTIONS_PAY_HTML);
+    my $cwd = getcwd;
 
-my $cwd = getcwd;
-
-print STDERR <<"_OPTIONS_LINK_";
+    print STDERR <<"_OPTIONS_LINK_";
 Please note the next series of tests will not succeeed unless there is at
 least one transaction that is part of a subscription payments in your business
 account.
@@ -60,6 +73,8 @@ if you haven't made one yet, you can visit:
 
 and use the sandbox buyer account to make the payment.
 _OPTIONS_LINK_
+}
+
 
 my $startdate = '1998-01-01T01:45:10.00Z';
 
@@ -68,12 +83,13 @@ my $td   = new Business::PayPal::API::GetTransactionDetails( %args );
 
 my $resp = $ts->TransactionSearch(StartDate     => $startdate);
 my %detail;
+
 foreach my $record (@{$resp}) {
     %detail = $td->GetTransactionDetails(TransactionID => $record->{TransactionID});
-    last if $detail{PII_Name} =~ /Field\s+Options/i;
+    last if $detail{PII_Name} =~ /$itemName/;
 }
-like($detail{PaymentItems}[0]{Name}, qr/Field\s+Options/i, 'Found field options test transaction');
-like($detail{PII_Name}, qr/Field\s+Options/i, 'Found field options test transaction');
+like($detail{PaymentItems}[0]{Name}, qr/$itemName/, 'Found field options test transaction');
+like($detail{PII_Name}, qr/$itemName/, 'Found field options test transaction');
 
 foreach my $options ($detail{PaymentItems}[0]{Options}, $detail{PII_Options}[0]) {
     ok(scalar(keys %$options) == 2, "The PaymentItems Options has 2 elements");
