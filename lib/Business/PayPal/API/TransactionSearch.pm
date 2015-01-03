@@ -20,6 +20,7 @@ sub TransactionSearch {
         Payer            => 'ebl:EmailAddressType',
         Receiver         => 'ebl:EmailAddressType',
         ReceiptID        => 'xs:string',
+        ProfileID        => 'xs:string',
         TransactionID    => 'xs:string',
         InvoiceID        => 'xs:string',
         PayerName        => 'xs:string',
