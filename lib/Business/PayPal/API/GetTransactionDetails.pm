@@ -291,7 +291,8 @@ records:
                       Number   => '...',
                       Quantity => '...',
                       Amount   => '...',
-                      Options  => { 'key' => 'value', ... },
+                      Options  => { 'key0' => 'value0',
+                                    'key1' => 'value1' },
                     },
                     { SalesTax => ..., etc.
                     } ]
@@ -308,6 +309,16 @@ Example:
           print "Option: $optionname is " . $item->{Options}{$optionname} . "\n";
       }
   }
+
+=head2 PaymentItem Options Limitations
+
+Note, BTW, that PayPal has a limitation such that each PaymentItem can
+contain only two Options.  See:
+   L<https://www.paypal.com/cgi-bin/webscr?cmd=p/xcl/rec/options-help-outside>
+   L<https://developer.paypal.com/webapps/developer/docs/classic/paypal-payments-standard/integration-guide/Appx_websitestandard_htmlvariables/>
+
+This hack may be of interest if you want to sneak in four options:
+   L<https://ppmts.custhelp.com/app/answers/detail/a_id/298/kw/soap%20gettransactiondetails%20option>
 
 =head2 ERROR HANDLING
 
