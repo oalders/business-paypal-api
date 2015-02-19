@@ -88,14 +88,14 @@ Business::PayPal::API::TransactionSearch - PayPal TransactionSearch API
   use Business::PayPal::API::TransactionSearch;
 
   ## see Business::PayPal::API documentation for parameters
-  my $pp = new Business::PayPal::API::TransactionSearch ( ... );
+  my $pp = Business::PayPal::API::TransactionSearch->new( ... );
 
-  my %response = $pp->TransactionSearch( StartDate => '1998-01-01T00:00:00Z',
+  my $transactions = $pp->TransactionSearch( StartDate => '1998-01-01T00:00:00Z',
                                          TransactionID => $transid, );
 
 =head1 DESCRIPTION
 
-B<Business::PayPal::API::TransactionSearch> implements PayPal's
+L<Business::PayPal::API::TransactionSearch> implements PayPal's
 B<TransactionSearch> API using SOAP::Lite to make direct API calls to
 PayPal's SOAP API server. It also implements support for testing via
 PayPal's I<sandbox>. Please see L<Business::PayPal::API> for details
@@ -147,7 +147,7 @@ Example:
 
   my $records = $pp->TransactionSearch( StartDate => '2006-03-21T22:29:55Z',
                                         InvoiceID => '599294993', );
-  
+
   for my $rec ( @$records ) {
       print "Record:\n";
       print "TransactionID: " . $rec->{TransactionID} . "\n";
@@ -157,7 +157,7 @@ Example:
 
 =head2 ERROR HANDLING
 
-See the B<ERROR HANDLING> section of B<Business::PayPal::API> for
+See the B<ERROR HANDLING> section of L<Business::PayPal::API> for
 information on handling errors.
 
 =head2 EXPORT
