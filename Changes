@@ -9,6 +9,8 @@ Revision history for Perl module Business::PayPal::API
     - Extract out more payer details from XML.
       (PayerName, NameSuffix, PayerCountry).
     - Fix https://rt.cpan.org/Public/Bug/Display.html?id=67386
+    - Options fields of GetTransactionDetails are now returned as a hash,
+      containing the actual options data, rather than array of empty strings.
 
 
 0.70 2012-11-13
