@@ -66,7 +66,7 @@ sub new {
     $args{Signature} ||= '';
     $args{Subject}   ||= '';
     $args{sandbox} = 1 unless exists $args{sandbox};
-    $args{timeout} ||= 0;
+    $args{timeout} ||= 30;
 
     $H_PKCS12File{$self}     = $args{PKCS12File}     || '';
     $H_PKCS12Password{$self} = $args{PKCS12Password} || '';
