@@ -131,17 +131,4 @@ None by default.
 
 L<https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf>
 
-=head1 AUTHOR
-
-Danny Hembree E<lt>danny@dynamical.orgE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006 by Danny Hembree
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.5 or,
-at your option, any later version of Perl 5 you may have available.
-
-
 =cut
