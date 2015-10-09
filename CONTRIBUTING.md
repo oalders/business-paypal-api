@@ -2,8 +2,7 @@
 
 To test this module type the following:
 
-   export WPP_TEST=auth.txt
-   dzil test
+    WPP_TEST=auth.txt prove -lvr t
 
 Please notice that this module requires you have several things before
 you can test it:
