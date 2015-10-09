@@ -6,12 +6,14 @@ Revision history for Perl module Business::PayPal::API
       - Protection eligibility support.
     - Merge in changes from Tomas Doran.
       - CPAN packaging enhancements.
-    - Extract out more payer details from XML.
-      (PayerName, NameSuffix, PayerCountry).
+    - Extract out more payer details from XML.  (PayerName, NameSuffix,
+      PayerCountry).
     - Fix https://rt.cpan.org/Public/Bug/Display.html?id=67386
     - Options fields of GetTransactionDetails are now returned as a hash,
       containing the actual options data, rather than array of empty strings.
-
+    - Default to a non-zero timeout
+      https://rt.cpan.org/Ticket/Display.html?id=107638 and
+      https://rt.cpan.org/Ticket/Display.html?id=105049 (Thanks to JT Smith)
 
 0.70 2012-11-13
     - First OALDERS release
