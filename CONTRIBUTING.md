@@ -1,11 +1,9 @@
 # SANDBOX TESTING
 
-To install this module type the following:
+To test this module type the following:
 
-   perl Makefile.PL
-   make
-   WPP_TEST=auth.txt make test
-   make install
+   export WPP_TEST=auth.txt
+   dzil test
 
 Please notice that this module requires you have several things before
 you can test it:
