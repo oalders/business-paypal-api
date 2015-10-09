@@ -466,9 +466,6 @@ ACKNOWLEDGEMENTS
       for authoring the AuthorizationRequest, CaptureRequest,
       DirectPayments, ReauthorizationRequest, and VoidRequest extensions.
 
-      Danny's contact information may be found in the AUTHOR section of the
-      above modules.
-
       * <jshiles at base16consulting daught com>
 
       for finding some API typos in the ExpressCheckout API
@@ -508,16 +505,4 @@ SEE ALSO
     https://www.paypal.com/IntegrationCenter/ic_expresscheckout.html,
     https://www.sandbox.paypal.com/en_US/pdf/PP_Sandbox_UserGuide.pdf,
     https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf
-
-AUTHOR
-
-    Scott Wiersdorf, <scott@perlcode.org>
-
-COPYRIGHT AND LICENSE
-
-    Copyright (C) 2006, 2007 by Scott Wiersdorf
-
-    This library is free software; you can redistribute it and/or modify it
-    under the same terms as Perl itself, either Perl version 5.8.6 or, at
-    your option, any later version of Perl 5 you may have available.
 
