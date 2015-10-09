@@ -1,9 +1,8 @@
-# This file is part of Business:PayPal:API Module.   License: Same as Perl.  See its README for details.
-# -*- mode: cperl -*-
-use Test::More;
 use strict;
 use autodie qw(:all);
+
 use Cwd;
+use Test::More;
 
 if ( !$ENV{WPP_TEST} || !-f $ENV{WPP_TEST} ) {
     plan skip_all =>
@@ -120,14 +119,3 @@ foreach my $options ($detail{PaymentItems}[0]{Options}, $detail{PII_Options}[0])
     ok(defined $options->{size}, "'size' option is present");
     ok($options->{size} eq "Large", "'size' option is selected as 'Large'");
 }
-
-# Local Variables:
-#   Mode: CPerl
-#   indent-tabs-mode: nil
-#   cperl-indent-level: 4
-#   cperl-brace-offset: 0
-#   cperl-continued-brace-offset: 0
-#   cperl-label-offset: -4
-#   cperl-continued-statement-offset: 4
-# End:
-

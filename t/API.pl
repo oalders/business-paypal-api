@@ -9,7 +9,7 @@ Should we set env variables, prompt for them, or have them in a conf
 file? Prompt for them, but we should allow for an input file as an env
 variable:
 
-  WPP_TEST=auth.txt make test
+  WPP_TEST=auth.txt prove -lvr t
 
 =cut
 
