@@ -33,7 +33,7 @@ my (%respsale, %resprefund, %resprefund1, %respbasic,
 #Test Full Refund on Sale
 
 #$Business::PayPal::API::Debug=1;
-$ppsale   = new Business::PayPal::API( %args );
+$ppsale   = Business::PayPal::API->new( %args );
 %respsale = $ppsale->DoDirectPaymentRequest(
     PaymentAction     => 'Sale',
     OrderTotal        => 11.87,
@@ -63,7 +63,7 @@ if ( like( $respsale{'Ack'}, qr/Success/, 'Direct Payment Sale' ) ) {
     $transale = $respsale{'TransactionID'};
 
     #$Business::PayPal::API::Debug=1;
-    $pprefund   = new Business::PayPal::API( %args );
+    $pprefund   = Business::PayPal::API->new( %args );
     %resprefund = $pprefund->RefundTransaction(
         TransactionID => $transale,
         RefundType    => 'Full',
@@ -79,7 +79,7 @@ if ( like( $respsale{'Ack'}, qr/Success/, 'Direct Payment Sale' ) ) {
 %args = do_args();
 
 #$Business::PayPal::API::Debug=0;
-$ppbasic   = new Business::PayPal::API( %args );
+$ppbasic   = Business::PayPal::API->new( %args );
 %respbasic = $ppbasic->DoDirectPaymentRequest(
     PaymentAction     => 'Authorization',
     OrderTotal        => 13.87,
@@ -115,7 +115,7 @@ if (like(
 
     #Test Partial Capture
     #$Business::PayPal::API::Debug=1;
-    $ppcap = new Business::PayPal::API( %args );
+    $ppcap = Business::PayPal::API->new( %args );
 
     %respcap = $ppcap->DoCaptureRequest(
         AuthorizationID => $tranbasic,
@@ -129,7 +129,7 @@ if (like(
 
     #Test Full Capture
     #$Business::PayPal::API::Debug=1;
-    $ppcap1   = new Business::PayPal::API( %args );
+    $ppcap1   = Business::PayPal::API->new( %args );
     %respcap1 = $ppcap1->DoCaptureRequest(
         AuthorizationID => $tranbasic,
         CompleteType    => 'Complete',
@@ -142,7 +142,7 @@ if (like(
 else { skip( "direct payment auth failed", 2 ) }
 
 #Test Void
-$ppbasic   = new Business::PayPal::API( %args );
+$ppbasic   = Business::PayPal::API->new( %args );
 %respbasic = $ppbasic->DoDirectPaymentRequest(
     PaymentAction     => 'Authorization',
     OrderTotal        => 17.37,
@@ -168,7 +168,7 @@ $ppbasic   = new Business::PayPal::API( %args );
 );
 
 #$Business::PayPal::API::Debug=1;
-$ppvoid   = new Business::PayPal::API( %args );
+$ppvoid   = Business::PayPal::API->new( %args );
 %respvoid = $ppvoid->DoVoidRequest(
     AuthorizationID => $respbasic{TransactionID},
     Note            => 'Authorization Void',
