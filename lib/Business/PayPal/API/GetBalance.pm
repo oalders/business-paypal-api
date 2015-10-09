@@ -46,3 +46,4 @@ sub GetBalance {
 1;
 __END__
 
+# ABSTRACT: PayPal GetBalance API

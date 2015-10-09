@@ -110,27 +110,30 @@ sub MassPay {
 1;
 __END__
 
+# ABSTRACT: PayPal MassPay API
 
-=head1 NAME
-
-Business::PayPal::API::MassPay - PayPal MassPay API
+=pod
 
 =head1 SYNOPSIS
 
-  use Business::PayPal::API::MassPay;
+    use Business::PayPal::API::MassPay;
 
-  ## see Business::PayPal::API documentation for parameters
-  my $pp = new Business::PayPal::API::MassPay ( ... );
+    ## see Business::PayPal::API documentation for parameters
+    my $pp = Business::PayPal::API::MassPay->new( ... );
 
-  my %response = $pp->MassPay( EmailSubject => "Here's your moola",
-                               MassPayItems => [ { ReceiverEmail => 'joe@somewhere.tld',
-                                                   Amount        => '95.44',
-                                                   Note          => 'Thanks for your stuff!' },
-                                                 { ReceiverEmail => 'bob@elsewhere.tld',
-                                                   Amount        => '15.31',
-                                                   Note          => 'We owe you one' }, ] );
-
- );
+    my %response = $pp->MassPay(
+        EmailSubject => "Here's your moola",
+        MassPayItems => [
+            {   ReceiverEmail => 'joe@somewhere.tld',
+                Amount        => '95.44',
+                Note          => 'Thanks for your stuff!'
+            },
+            {   ReceiverEmail => 'bob@elsewhere.tld',
+                Amount        => '15.31',
+                Note          => 'We owe you one'
+            },
+        ]
+    );
 
 =head1 DESCRIPTION
 
@@ -185,18 +188,5 @@ None by default.
 =head1 SEE ALSO
 
 L<https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf>
-
-=head1 AUTHOR
-
-Scot Wiersdorf E<lt>scott@perlcode.orgE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2007 by Scott Wiersdorf
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.5 or,
-at your option, any later version of Perl 5 you may have available.
-
 
 =cut

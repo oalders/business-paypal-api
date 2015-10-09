@@ -79,19 +79,21 @@ sub TransactionSearch {
 1;
 __END__
 
-=head1 NAME
+# ABSTRACT: PayPal TransactionSearch API
 
-Business::PayPal::API::TransactionSearch - PayPal TransactionSearch API
+=pod
 
 =head1 SYNOPSIS
 
-  use Business::PayPal::API::TransactionSearch;
+    use Business::PayPal::API::TransactionSearch;
 
-  ## see Business::PayPal::API documentation for parameters
-  my $pp = Business::PayPal::API::TransactionSearch->new( ... );
+    # see Business::PayPal::API documentation for parameters
+    my $pp = Business::PayPal::API::TransactionSearch->new( ... );
 
-  my $transactions = $pp->TransactionSearch( StartDate => '1998-01-01T00:00:00Z',
-                                         TransactionID => $transid, );
+    my $transactions = $pp->TransactionSearch(
+        StartDate     => '1998-01-01T00:00:00Z',
+        TransactionID => $transid,
+    );
 
 =head1 DESCRIPTION
 
@@ -145,15 +147,17 @@ following fields:
 
 Example:
 
-  my $records = $pp->TransactionSearch( StartDate => '2006-03-21T22:29:55Z',
-                                        InvoiceID => '599294993', );
+    my $records = $pp->TransactionSearch(
+        StartDate => '2006-03-21T22:29:55Z',
+        InvoiceID => '599294993',
+    );
 
-  for my $rec ( @$records ) {
-      print "Record:\n";
-      print "TransactionID: " . $rec->{TransactionID} . "\n";
-      print "Payer Email: " . $rec->{Payer} . "\n";
-      print "Amount: " . $rec->{GrossAmount} . "\n\n";
-  }
+    for my $rec ( @$records ) {
+        print "Record:\n";
+        print "TransactionID: " . $rec->{TransactionID} . "\n";
+        print "Payer Email: " . $rec->{Payer} . "\n";
+        print "Amount: " . $rec->{GrossAmount} . "\n\n";
+    }
 
 =head2 ERROR HANDLING
 
@@ -167,18 +171,5 @@ None by default.
 =head1 SEE ALSO
 
 L<https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf>
-
-=head1 AUTHOR
-
-Scot Wiersdorf E<lt>scott@perlcode.orgE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006 by Scott Wiersdorf
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.5 or,
-at your option, any later version of Perl 5 you may have available.
-
 
 =cut

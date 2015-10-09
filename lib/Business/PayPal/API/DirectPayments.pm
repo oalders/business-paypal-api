@@ -206,24 +206,24 @@ sub DoDirectPaymentRequest {
 
 __END__
 
-=head1 NAME
+# ABSTRACT: PayPal DirectPayments API
 
-Business::PayPal::API::DirectPayments - PayPal DirectPayments API
+=pod
 
 =head1 SYNOPSIS
 
     use Business::PayPal::API qw(DirectPayments);
-    
+
     ## see Business::PayPal::API documentation for parameters
-    
-    my $pp = new Business::PayPal::API(
+
+    my $pp = Business::PayPal::API->new(
                         Username => 'name_api1.example.org',
                         Password => 'somepass',
                         CertFile => '/path/to/tester1.cert_key_pem.txt',
                         KeyFile  => '/path/to/tester1.cert_key_pem.txt',
                         sandbox  => 1,
                         );
-    
+
     my %response = $pp->DoDirectPaymentRequest (
                         PaymentAction      => 'Sale',
                         OrderTotal         => 13.59,
@@ -334,18 +334,5 @@ None by default.
 =head1 SEE ALSO
 
 L<https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf>
-
-=head1 AUTHOR
-
-Daniel Hembree E<lt>danny@dynamical.orgE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006 by Daniel P. Hembree
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.5 or,
-at your option, any later version of Perl 5 you may have available.
-
 
 =cut

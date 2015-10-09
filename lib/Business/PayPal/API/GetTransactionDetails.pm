@@ -141,22 +141,22 @@ sub GetTransactionDetails {
 1;
 __END__
 
-=head1 NAME
+# ABSTRACT: PayPal GetTransactionDetails API
 
-Business::PayPal::API::GetTransactionDetails - PayPal GetTransactionDetails API
+=pod
 
 =head1 SYNOPSIS
 
-  use Business::PayPal::API::GetTransactionDetails;
-  my $pp = new Business::PayPal::API::GetTransactionDetails ( ... );
+    use Business::PayPal::API::GetTransactionDetails;
+    my $pp = Business::PayPal::API::GetTransactionDetails->new( ... );
 
 or
 
-  ## see Business::PayPal::API documentation for parameters
-  use Business::PayPal::API qw(GetTransactionDetails);
-  my $pp = new Business::PayPal::API( ... );
+    # see Business::PayPal::API documentation for parameters
+    use Business::PayPal::API qw(GetTransactionDetails);
+    my $pp = Business::PayPal::API->new( ... );
 
-  my %response = $pp->GetTransactionDetails( TransactionID => $transid, );
+    my %response = $pp->GetTransactionDetails( TransactionID => $transid, );
 
 =head1 DESCRIPTION
 
@@ -255,13 +255,13 @@ If there are multiple PaymentItems, then an additional field
 'PaymentItems' will be available with an arrayref of PaymentItem
 records:
 
-  PaymentItems => [ { SalesTax => ..., 
+  PaymentItems => [ { SalesTax => ...,
                       Name     => '...',
                       Number   => '...',
                       Quantity => '...',
                       Amount   => '...',
                     },
-                    { SalesTax => ..., etc. 
+                    { SalesTax => ..., etc.
                     } ]
 
 Example:
@@ -286,18 +286,5 @@ None by default.
 =head1 SEE ALSO
 
 L<https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf>
-
-=head1 AUTHOR
-
-Scot Wiersdorf E<lt>scott@perlcode.orgE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006 by Scott Wiersdorf
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.5 or,
-at your option, any later version of Perl 5 you may have available.
-
 
 =cut

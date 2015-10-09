@@ -555,28 +555,29 @@ sub DoReferenceTransaction {
 1;
 __END__
 
-=head1 NAME
+# ABSTRACT: PayPal RecurringPayments API
 
-Business::PayPal::API::RecurringPayments - PayPal RecurringPayments API
+=pod
 
 =head1 SYNOPSIS
 
-use Business::PayPal::API::RecurringPayments;
+    use Business::PayPal::API::RecurringPayments;
 
-my $pp = new Business::PayPal::API::RecurringPayments( ... );
+    my $pp = Business::PayPal::API::RecurringPayments->new( ... );
 
-my %resp = $pp->FIXME
+    my %resp = $pp->FIXME
 
-  ## Ask PayPal to charge a new transaction from the ReferenceID
-  ## This method is used both for Recurring Transactions as well 
-  ## as for Express Checkout's MerchantInitiatedBilling, where 
-  ## ReferenceID is the BillingAgreementID returned from 
-  ## ExpressCheckout->DoExpressCheckoutPayment
+    # Ask PayPal to charge a new transaction from the ReferenceID
+    # This method is used both for Recurring Transactions as well
+    # as for Express Checkout's MerchantInitiatedBilling, where
+    # ReferenceID is the BillingAgreementID returned from
+    # ExpressCheckout->DoExpressCheckoutPayment
 
-  my %payinfo = $pp->DoReferenceTransaction( ReferenceID => $details{ReferenceID},
-                                               PaymentAction => 'Sale',
-                                               OrderTotal => '55.43' );
-
+    my %payinfo = $pp->DoReferenceTransaction(
+        ReferenceID   => $details{ReferenceID},
+        PaymentAction => 'Sale',
+        OrderTotal    => '55.43'
+    );
 
 =head1 DESCRIPTION
 
@@ -644,17 +645,5 @@ Required fields:
 =head1 SEE ALSO
 
 L<https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf>
-
-=head1 AUTHOR
-
-Scot Wiersdorf E<lt>scott@perlcode.orgE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2007 by Scott Wiersdorf
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.5 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut

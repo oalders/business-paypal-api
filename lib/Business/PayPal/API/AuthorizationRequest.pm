@@ -63,9 +63,9 @@ sub DoAuthorizationRequest {
 1;
 __END__
 
-=head1 NAME
+# ABSTRACT: PayPal AuthorizationRequest API
 
-Business::PayPal::API::AuthorizationRequest - PayPal AuthorizationRequest API
+=pod
 
 =head1 SYNOPSIS
 
@@ -87,9 +87,9 @@ B<AuthorizationRequest> API using SOAP::Lite to make direct API calls to
 PayPal's SOAP API server. It also implements support for testing via
 PayPal's I<sandbox>. Please see L<Business::PayPal::API> for details
 on using the PayPal sandbox. This request is only used with "Order" type
-Authorizations. An "Order" must first be placed using the ExpressCheckout 
+Authorizations. An "Order" must first be placed using the ExpressCheckout
 module. DirectPayment authorizations can only be used for "Basic"
-authorizations. 
+authorizations.
 
 =head2 AuthorizationRequest
 
