@@ -40,7 +40,7 @@ DESCRIPTION
     Business::PayPal::API supports both certificate authentication and the
     new 3-token "Signature" authentication.
 
-    It also support PayPal's development sandbox for testing. See the
+    It also supports PayPal's development sandbox for testing. See the
     sandbox parameter to new() below for details.
 
     Business::PayPal::API can import other API derived classes:
@@ -272,12 +272,12 @@ TROUBLESHOOTING
 
        * your username and password match those found in your PayPal
          Business account sandbox (this is not the same as your regular
-         account.
+         account).
     
        * you're not trying to use your live username and password for
          sandbox testing and vice versa.
     
-       * you are using a US Business Sandbox account.  you may also need to have
+       * you are using a US Business Sandbox account, you may also need to have
          "PayPal Payments Pro" enabled.
     
        * if the sandbox works but "live" does not, make sure you've turned
@@ -360,7 +360,7 @@ TROUBLESHOOTING
 DEBUGGING
 
     You can see the raw SOAP XML sent and received by Business::PayPal::API
-    by setting it's $Debug variable:
+    by setting its $Debug variable:
 
       $Business::PayPal::API::Debug = 1;
       $pp->SetExpressCheckout( %args );
