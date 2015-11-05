@@ -77,6 +77,29 @@ sub SetExpressCheckout {
                 ->attr(
                 { currencyID => $currencyID, xmlns => $self->C_xmlns_ebay } );
         }
+        elsif ( $field eq 'Address' ) {
+            my $address = $args{$field};
+            my %address_types = (
+                                 Name            => 'xs:string',
+                                 Street1         => 'xs:string',
+                                 Street2         => 'xs:string',
+                                 CityName        => 'xs:string',
+                                 StateOrProvince => 'xs:string',
+                                 Country         => 'xs:string',
+                                 PostalCode      => 'xs:string',
+                                );
+            my @address;
+            foreach my $k (keys %address_types) {
+                if (defined $address->{$k}) {
+                    push @address, SOAP::Data->name( $k => $address->{$k} )->type($address_types{$k});
+                }
+            }
+            if (@address) {
+                push @secrd, SOAP::Data->name($field => \SOAP::Data->value ( @address )
+                                              ->type( $types{$field} )
+                                              ->attr( { xmlns => $self->C_xmlns_ebay } ) );
+            }
+        }
         else {
             push @secrd,
                 SOAP::Data->name( $field => $args{$field} )
