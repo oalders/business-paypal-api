@@ -1,9 +1,11 @@
-.build
-.tidyall.d/
 Business-PayPal-API-*
 auth.txt
 blib
+.build
 options-payment.html
 perltidy.LOG
 pm_to_blib
 subscription-payment.html
+tidyall.ERR
+.tidyall.d/
+.*.swp
