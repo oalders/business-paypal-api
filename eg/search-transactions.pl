@@ -8,6 +8,7 @@ use feature qw( say );
 use Business::PayPal::API::TransactionSearch;
 use DateTime;
 use Data::Printer;
+use String::CamelCase qw( camelize );
 use Types::Standard qw( InstanceOf );
 
 # credentials
@@ -40,6 +41,20 @@ option username => (
 );
 
 # search options
+option amount => (
+    is       => 'ro',
+    format   => 's',
+    required => 0,
+    doc      => 'payment amount',
+);
+
+option end_date => (
+    is       => 'ro',
+    format   => 's',
+    required => 0,
+    doc      => 'end date for search. eg 2005-12-22T08:51:28Z',
+);
+
 option start_date => (
     is       => 'ro',
     format   => 's',
@@ -56,6 +71,13 @@ option payer => (
     doc      => 'payer email address',
 );
 
+option transaction_id => (
+    is       => 'ro',
+    format   => 's',
+    required => 0,
+    doc      => 'transaction id',
+);
+
 has _client => (
     is      => 'ro',
     isa     => InstanceOf ['Business::PayPal::API::TransactionSearch'],
@@ -65,13 +87,17 @@ has _client => (
 
 sub search {
     my $self = shift;
-    say 'Search begins on ' . $self->start_date;
 
-    my @response = $self->_client->TransactionSearch(
-        StartDate => $self->start_date,
-        $self->payer ? ( Payer => $self->payer ) : (),
-    );
+    my @terms
+        = ( 'amount', 'end_date', 'payer', 'start_date', 'transaction_id', );
 
+    my %search_terms
+        = map { camelize($_) => $self->$_ } grep { $self->$_ } @terms;
+
+    say 'Search terms: ';
+    p %search_terms;
+
+    my @response = $self->_client->TransactionSearch(%search_terms);
     unless ( ref $response[0] ) {
         my %error = @response;
         p %error;
@@ -103,8 +129,18 @@ use Data::Printer;
 
 my $searcher = Example::TransactionSearcher->new_with_options();
 my $txns     = $searcher->search;
-say 'no results' unless @{$txns};
+unless ( @{$txns} ) {
+    say 'no results';
+    exit;
+}
 
 foreach my $txn ( @{$txns} ) {
-    p $txn if @$txn;
+
+    # remove undef values
+    for my $field ( keys %{$txn} ) {
+        delete $txn->{$field} unless $txn->{$field};
+    }
+    p $txn;
 }
+
+say scalar @{$txns} . ' results found';
