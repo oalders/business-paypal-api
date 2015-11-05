@@ -15,31 +15,31 @@ our $Debug = $ENV{WPP_DEBUG} || 0;
 ## NOTE: type definitions, at which point this module will become much
 ## NOTE: smaller (or non-existent).
 
-sub C_api_sandbox ()    {'https://api.sandbox.paypal.com/2.0/'}
-sub C_api_sandbox_3t () {'https://api-3t.sandbox.paypal.com/2.0/'}
-sub C_api_live ()       {'https://api.paypal.com/2.0/'}
-sub C_api_live_3t ()    {'https://api-3t.paypal.com/2.0/'}
-sub C_xmlns_pp ()       {'urn:ebay:api:PayPalAPI'}
-sub C_xmlns_ebay ()     {'urn:ebay:apis:eBLBaseComponents'}
-sub C_version () {'61.0'}    ## 3.0 adds RecurringPayments
+sub C_api_sandbox ()    { 'https://api.sandbox.paypal.com/2.0/' }
+sub C_api_sandbox_3t () { 'https://api-3t.sandbox.paypal.com/2.0/' }
+sub C_api_live ()       { 'https://api.paypal.com/2.0/' }
+sub C_api_live_3t ()    { 'https://api-3t.paypal.com/2.0/' }
+sub C_xmlns_pp ()       { 'urn:ebay:api:PayPalAPI' }
+sub C_xmlns_ebay ()     { 'urn:ebay:apis:eBLBaseComponents' }
+sub C_version () { '61.0' }    ## 3.0 adds RecurringPayments
 
 ## this is an inside-out object. Make sure you 'delete' additional
 ## members in DESTROY() as you add them.
 my %Soap;
 my %Header;
 
-my %H_PKCS12File;            ## path to certificate file (pkc12)
-my %H_PKCS12Password;        ## password for certificate file (pkc12)
-my %H_CertFile;              ## PEM certificate
-my %H_KeyFile;               ## PEM private key
+my %H_PKCS12File;              ## path to certificate file (pkc12)
+my %H_PKCS12Password;          ## password for certificate file (pkc12)
+my %H_CertFile;                ## PEM certificate
+my %H_KeyFile;                 ## PEM private key
 
 sub import {
     my $self    = shift;
     my @modules = @_;
 
-    for my $module ( @modules ) {
-        eval( "use Business::PayPal::API::$module;" );
-        if ( $@ ) {
+    for my $module (@modules) {
+        eval("use Business::PayPal::API::$module;");
+        if ($@) {
             warn $@;
             next;
         }
@@ -47,8 +47,7 @@ sub import {
         ## import 'exported' subroutines into our namespace
         no strict 'refs';
         for my $sub (
-            @{ "Business::PayPal::API::" . $module . "::EXPORT_OK" } )
-        {
+            @{ "Business::PayPal::API::" . $module . "::EXPORT_OK" } ) {
             *{ "Business::PayPal::API::" . $sub }
                 = *{ "Business::PayPal::API::" . $module . "::" . $sub };
         }
@@ -75,34 +74,34 @@ sub new {
 
     my $proxy = (
         $args{sandbox}
-        ? ( $args{Signature}
+        ? (
+            $args{Signature}
             ? C_api_sandbox_3t
             : C_api_sandbox
             )
-        : ( $args{Signature}
+        : (
+            $args{Signature}
             ? C_api_live_3t
             : C_api_live
         )
     );
 
     $Soap{$self} = SOAP::Lite->proxy( $proxy, timeout => $args{timeout} )
-        ->uri( C_xmlns_pp );
+        ->uri(C_xmlns_pp);
 
     $Header{$self} = SOAP::Header->name(
         RequesterCredentials => \SOAP::Header->value(
             SOAP::Data->name(
                 Credentials => \SOAP::Data->value(
-                    SOAP::Data->name( Username => $args{Username} )
-                        ->type( '' ),
-                    SOAP::Data->name( Password => $args{Password} )
-                        ->type( '' ),
+                    SOAP::Data->name( Username => $args{Username} )->type(''),
+                    SOAP::Data->name( Password => $args{Password} )->type(''),
                     SOAP::Data->name( Signature => $args{Signature} )
-                        ->type( '' ),
-                    SOAP::Data->name( Subject => $args{Subject} )->type( '' ),
+                        ->type(''),
+                    SOAP::Data->name( Subject => $args{Subject} )->type(''),
                 ),
             )->attr( { xmlns => C_xmlns_ebay } )
         )
-    )->attr( { xmlns => C_xmlns_pp } )->mustUnderstand( 1 );
+    )->attr( { xmlns => C_xmlns_pp } )->mustUnderstand(1);
 
     return $self;
 }
@@ -118,12 +117,12 @@ sub DESTROY {
     delete $H_CertFile{$self};
     delete $H_KeyFile{$self};
 
-    my $super = $self->can( "SUPER::DESTROY" );
+    my $super = $self->can("SUPER::DESTROY");
     goto &$super if $super;
 }
 
 sub version_req {
-    return SOAP::Data->name( Version => C_version )->type( 'xs:string' )
+    return SOAP::Data->name( Version => C_version )->type('xs:string')
         ->attr( { xmlns => C_xmlns_ebay } );
 }
 
@@ -132,7 +131,7 @@ sub doCall {
     my $method_name = shift;
     my $request     = shift;
     my $method
-        = SOAP::Data->name( $method_name )->attr( { xmlns => C_xmlns_pp } );
+        = SOAP::Data->name($method_name)->attr( { xmlns => C_xmlns_pp } );
 
     my $som;
     {
@@ -144,7 +143,7 @@ sub doCall {
             and local $ENV{HTTPS_CERT_FILE} = $H_CertFile{$self};
         $H_KeyFile{$self} and local $ENV{HTTPS_KEY_FILE} = $H_KeyFile{$self};
 
-        if ( $Debug ) {
+        if ($Debug) {
             print STDERR SOAP::Serializer->envelope(
                 method => $method,
                 $Header{$self}, $request
@@ -158,18 +157,18 @@ sub doCall {
             $som = $Soap{$self}->call( $Header{$self}, $method => $request );
         };
 
-        if ( $@ ) {
+        if ($@) {
             carp $@;
             return;
         }
     }
 
-    if ( $Debug ) {
+    if ($Debug) {
         ## FIXME: would be nicer to dump a SOM to XML, but how to do that?
         p( $som->envelope );
     }
 
-    if ( ref( $som ) && $som->fault ) {
+    if ( ref($som) && $som->fault ) {
         carp "Fault: "
             . $som->faultstring
             . ( $som->faultdetail ? " (" . $som->faultdetail . ")" : '' )
@@ -190,7 +189,7 @@ sub getFieldsList {
 
     my %trans_id = ();
     my @records  = ();
-    for my $rec ( $som->valueof( $path ) ) {
+    for my $rec ( $som->valueof($path) ) {
         my %response = ();
         @response{ keys %$fields } = @{$rec}{ keys %$fields };
 
@@ -238,10 +237,10 @@ sub getFields {
     ## it.
 
     for my $field ( keys %$fields ) {
-        my @vals = grep {defined} $som->valueof( "$path/$fields->{$field}" );
+        my @vals = grep { defined } $som->valueof("$path/$fields->{$field}");
         next unless @vals;
 
-        if ( scalar( @vals ) == 1 ) {
+        if ( scalar(@vals) == 1 ) {
             $response->{$field} = $vals[0];
         }
         else {
@@ -258,8 +257,8 @@ sub getBasic {
 
     return unless $som;
 
-    for my $field ( qw( Ack Timestamp CorrelationID Version Build ) ) {
-        $details->{$field} = $som->valueof( "$path/$field" ) || '';
+    for my $field (qw( Ack Timestamp CorrelationID Version Build )) {
+        $details->{$field} = $som->valueof("$path/$field") || '';
     }
 
     return $details->{Ack} =~ /Success/;
@@ -275,7 +274,7 @@ sub getErrors {
 
     my @errors = ();
 
-    for my $enode ( $som->valueof( "$path/Errors" ) ) {
+    for my $enode ( $som->valueof("$path/Errors") ) {
         push @errors,
             {
             LongMessage => $enode->{LongMessage},

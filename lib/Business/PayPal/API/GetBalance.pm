@@ -17,9 +17,8 @@ sub GetBalance {
     my @trans = ( $self->version_req, );
 
     my $request
-        = SOAP::Data->name(
-        GetBalanceRequest => \SOAP::Data->value( @trans ) )
-        ->type( "ns:GetBalanceRequestType" );
+        = SOAP::Data->name( GetBalanceRequest => \SOAP::Data->value(@trans) )
+        ->type("ns:GetBalanceRequestType");
 
     my $som = $self->doCall( GetBalanceReq => $request )
         or return;
@@ -35,7 +34,8 @@ sub GetBalance {
     $self->getFields(
         $som, $path,
         \%response,
-        {   Balance          => 'Balance',
+        {
+            Balance          => 'Balance',
             BalanceTimeStamp => 'BalanceTimeStamp',
         }
     );

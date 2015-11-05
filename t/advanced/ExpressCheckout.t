@@ -7,7 +7,7 @@ else {
     plan tests => 6;
 }
 
-use_ok( 'Business::PayPal::API::ExpressCheckout' );
+use_ok('Business::PayPal::API::ExpressCheckout');
 #########################
 
 require 't/API.pl';
@@ -17,7 +17,7 @@ my %args = do_args();
 ## we're passing more to new() than we normally would because we're
 ## using %args elsewhere below. See documentation for the correct
 ## arguments.
-my $pp = new Business::PayPal::API::ExpressCheckout( %args );
+my $pp = new Business::PayPal::API::ExpressCheckout(%args);
 
 ##
 ## set checkout info
@@ -73,7 +73,7 @@ die "Need a PayerID.\n" unless $payerid;
 ##
 ## get checkout details
 ##
-my %details = $pp->GetExpressCheckoutDetails( $token );
+my %details = $pp->GetExpressCheckoutDetails($token);
 is( $details{Token}, $token, "details ok" );
 
 #use Data::Dumper;
@@ -91,7 +91,7 @@ my %payment = (
 ##
 ## do checkout
 ##
-my %payinfo = $pp->DoExpressCheckoutPayment( %payment );
+my %payinfo = $pp->DoExpressCheckoutPayment(%payment);
 
 like( $payinfo{Ack}, qr/Success/, "successful payment" );
 is( $payinfo{Token},       $token, "payment ok" );

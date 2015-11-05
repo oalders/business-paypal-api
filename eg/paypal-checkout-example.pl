@@ -34,25 +34,24 @@ use Data::Dumper;
 
 # security for shell calls:
 $ENV{'PATH'} = '/bin:/usr/bin';
-delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
-
+delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
 ############################################
 # globale VARIABLEN
 ############################################
 
-my $debug = 0;
+my $debug           = 0;
 my $errors_occurred = 0;
 
 # some self detection
-my $self = $0; $self =~ s|.*/||;
+my $self = $0;
+$self =~ s|.*/||;
 
 my $hostname = `/bin/hostname -f`;
 chomp $hostname;
-$hostname="none" unless $hostname;
+$hostname = "none" unless $hostname;
 
 my $TMPDIR = $ENV{'TEMP'} || $ENV{'TMPDIR'} || "/tmp";
-
 
 ############################################
 # konfigurierbare VARIABLEN
@@ -60,394 +59,364 @@ my $TMPDIR = $ENV{'TEMP'} || $ENV{'TMPDIR'} || "/tmp";
 
 # unser PayPal-Username, PayPal-Passwort und PayPal-Signature
 # werden über das Environment oder als Parameter übergeben.
-my $pp_username = $ENV{'PP_USERNAME'}  if $ENV{'PP_USERNAME'};
-my $pp_password = $ENV{'PP_PASSWORD'}  if $ENV{'PP_PASSWORD'};
-my $pp_signature = $ENV{'PP_SIGNATURE'}  if $ENV{'PP_SIGNATURE'};
-
+my $pp_username  = $ENV{'PP_USERNAME'}  if $ENV{'PP_USERNAME'};
+my $pp_password  = $ENV{'PP_PASSWORD'}  if $ENV{'PP_PASSWORD'};
+my $pp_signature = $ENV{'PP_SIGNATURE'} if $ENV{'PP_SIGNATURE'};
 
 ############################################
 # command line options
 ############################################
 # option defaults
-my $showhelp = 0;
+my $showhelp    = 0;
 my $showmanpage = 0;
 my $showversion = 0;
-my $step = 0;
-my ($OrderTotal, $InvoiceID, $BuyerEmail, $OrderDescription);
-my $ReturnURL='http://blafaselfoo.sonst.was/paypal/return';
-my $CancelURL='http://blafaselfoo.sonst.was/paypal/cancel';
-my $PageStyle = '';
-my $cpp_header_image = '';
+my $step        = 0;
+my ( $OrderTotal, $InvoiceID, $BuyerEmail, $OrderDescription );
+my $ReturnURL               = 'http://blafaselfoo.sonst.was/paypal/return';
+my $CancelURL               = 'http://blafaselfoo.sonst.was/paypal/cancel';
+my $PageStyle               = '';
+my $cpp_header_image        = '';
 my $cpp_header_border_color = '';
-my $cpp_header_back_color = '';
-my $cpp_payflow_color = '';
+my $cpp_header_back_color   = '';
+my $cpp_payflow_color       = '';
 my $Token;
 my $PayerID;
 
 GetOptions(
-   "help|usage"         => \$showhelp,       # show usage
-   "manpage"            => \$showmanpage,    # show manpage
-   "version"            => \$showversion,    # show programm version
-   "debug+"             => \$debug,          # (incremental option)
-   "username=s"         => \$pp_username,    # 3-token PayPal-Zugangsdaten
-   "password=s"         => \$pp_password,    # 3-token PayPal-Zugangsdaten
-   "signature=s"        => \$pp_signature,   # 3-token PayPal-Zugangsdaten
-   "step=i"             => \$step,           # wievielter Schritt des Zahlungsvorgangs
-   "OrderTotal=s"       => \$OrderTotal,     # Betrag in Euro
-   "OrderDescription=s" => \$OrderDescription, # 127 Zeichen Beschreibung
-   "InvoiceID=s"        => \$InvoiceID,      # eindeutige Rechnungs-ID
-   "BuyerEmail=s"       => \$BuyerEmail,     # E-Mail des Kunden
-   "ReturnURL=s"        => \$ReturnURL,      # redirect-URL nach Kauf
-   "CancelURL=s"        => \$CancelURL,      # redirect-URL bei Abbruch
-   "PageStyle=s"               => \$PageStyle,
-   "cpp_header_image=s"        => \$cpp_header_image,
-   "cpp_header_border_color=s" => \$cpp_header_border_color,
-   "cpp_header_back_color=s"   => \$cpp_header_back_color,
-   "cpp_payflow_color=s"       => \$cpp_payflow_color,
-   "Token=s"            => \$Token,          # PayPal-Token
-   "PayerID=s"          => \$PayerID,        # PayPal-PayerID
+    "help|usage"  => \$showhelp,     # show usage
+    "manpage"     => \$showmanpage,  # show manpage
+    "version"     => \$showversion,  # show programm version
+    "debug+"      => \$debug,        # (incremental option)
+    "username=s"  => \$pp_username,  # 3-token PayPal-Zugangsdaten
+    "password=s"  => \$pp_password,  # 3-token PayPal-Zugangsdaten
+    "signature=s" => \$pp_signature, # 3-token PayPal-Zugangsdaten
+    "step=i"      => \$step,         # wievielter Schritt des Zahlungsvorgangs
+    "OrderTotal=s"       => \$OrderTotal,          # Betrag in Euro
+    "OrderDescription=s" => \$OrderDescription,    # 127 Zeichen Beschreibung
+    "InvoiceID=s"        => \$InvoiceID,           # eindeutige Rechnungs-ID
+    "BuyerEmail=s"       => \$BuyerEmail,          # E-Mail des Kunden
+    "ReturnURL=s"        => \$ReturnURL,           # redirect-URL nach Kauf
+    "CancelURL=s"        => \$CancelURL,           # redirect-URL bei Abbruch
+    "PageStyle=s"        => \$PageStyle,
+    "cpp_header_image=s" => \$cpp_header_image,
+    "cpp_header_border_color=s" => \$cpp_header_border_color,
+    "cpp_header_back_color=s"   => \$cpp_header_back_color,
+    "cpp_payflow_color=s"       => \$cpp_payflow_color,
+    "Token=s"                   => \$Token,                   # PayPal-Token
+    "PayerID=s"                 => \$PayerID,                 # PayPal-PayerID
 
-          ) or pod2usage(-exitstatus => 1, -verbose => 0);
+) or pod2usage( -exitstatus => 1, -verbose => 0 );
 
 # turn off buffering (sinnvoll für Debugging)
-$| = 1  if $debug;
+$| = 1 if $debug;
 
 # are there more arguments?
-if ($#ARGV >= 0)
-{
-  pod2usage(-message => "ERROR: unknown arguments \"@ARGV\".\n",
-            -exitstatus => 2,
-            -verbose => 0
-           );
+if ( $#ARGV >= 0 ) {
+    pod2usage(
+        -message    => "ERROR: unknown arguments \"@ARGV\".\n",
+        -exitstatus => 2,
+        -verbose    => 0
+    );
 }
 
-pod2usage(-exitstatus => 0, -verbose => 1)  if $showhelp;
-pod2usage(-exitstatus => 0, -verbose => 2)  if $showmanpage;
+pod2usage( -exitstatus => 0, -verbose => 1 ) if $showhelp;
+pod2usage( -exitstatus => 0, -verbose => 2 ) if $showmanpage;
 
-if ($showversion)
-{ print "$self - Version: $VERSION\n"; exit; }
+if ($showversion) { print "$self - Version: $VERSION\n"; exit; }
 
-if ($debug)
-{
-  print "DEBUG-Modus($debug): schalte $self in Debugmodus.\n";
+if ($debug) {
+    print "DEBUG-Modus($debug): schalte $self in Debugmodus.\n";
 }
-
 
 ############################################
 # Hauptprogramm
 ############################################
 
-print "Starte $self (v$VERSION)\n"  if $debug;
+print "Starte $self (v$VERSION)\n" if $debug;
 
 # ohne Zugangsdaten können wir gleich aufhören
-if (not ($pp_username and $pp_password and $pp_signature))
-{
-  &error_exit("Environment-Variablen PP_USER, PP_PASS und PP_SIGNATURE müssen gesetzt sein oder per Parameter angegeben werden.", 5);
+if ( not( $pp_username and $pp_password and $pp_signature ) ) {
+    &error_exit(
+        "Environment-Variablen PP_USER, PP_PASS und PP_SIGNATURE müssen gesetzt sein oder per Parameter angegeben werden.",
+        5
+    );
 }
-&print_debug("PayPal-Username: $pp_username", 1);
-&print_debug("PayPal-Passwort: $pp_password", 1);
-&print_debug("PayPal-Signatur: $pp_signature", 1);
-
+&print_debug( "PayPal-Username: $pp_username",  1 );
+&print_debug( "PayPal-Passwort: $pp_password",  1 );
+&print_debug( "PayPal-Signatur: $pp_signature", 1 );
 
 # Authentifizierungsdaten an API-Modul übergeben
 #  see Business::PayPal::API documentation for parameters
-my $pp = new Business::PayPal::API::ExpressCheckout
-   (
-    Username       => $pp_username,
-    Password       => $pp_password,
-    Signature      => $pp_signature,
-    sandbox        => 0
-   );
+my $pp = new Business::PayPal::API::ExpressCheckout(
+    Username  => $pp_username,
+    Password  => $pp_password,
+    Signature => $pp_signature,
+    sandbox   => 0
+);
 
-if ($debug >= 2)
-{
-  $Business::PayPal::API::Debug = 1;
+if ( $debug >= 2 ) {
+    $Business::PayPal::API::Debug = 1;
 }
-
 
 # Zahlungsvorgang Schritt 1
-if ($step == 1)
-{
-  # Parameter prüfen
-  ##################
-  if (not $OrderTotal)
-  {
-    &error_exit("OrderTotal fehlt.", 11);
-  }
-  &print_debug("OrderTotal: $OrderTotal:", 1);
+if ( $step == 1 ) {
 
+    # Parameter prüfen
+    ##################
+    if ( not $OrderTotal ) {
+        &error_exit( "OrderTotal fehlt.", 11 );
+    }
+    &print_debug( "OrderTotal: $OrderTotal:", 1 );
 
-  if (not $OrderDescription)
-  {
-    &error_exit("OrderDescription fehlt.", 12);
-  }
-  if (length($OrderDescription) > 127)
-  {
-    &print_debug("Achtung, kürze zu lange OrderDescription auf 127 Zeichen.", 1);
-    $OrderDescription = substr($OrderDescription, 1, 127);
-  }
-  &print_debug("OrderDescription: $OrderDescription", 1);
+    if ( not $OrderDescription ) {
+        &error_exit( "OrderDescription fehlt.", 12 );
+    }
+    if ( length($OrderDescription) > 127 ) {
+        &print_debug(
+            "Achtung, kürze zu lange OrderDescription auf 127 Zeichen.", 1 );
+        $OrderDescription = substr( $OrderDescription, 1, 127 );
+    }
+    &print_debug( "OrderDescription: $OrderDescription", 1 );
 
+    if ( not $InvoiceID ) {
+        &error_exit( "InvoiceID fehlt.", 13 );
+    }
+    &print_debug( "InvoiceID: $InvoiceID:", 1 );
 
-  if (not $InvoiceID)
-  {
-    &error_exit("InvoiceID fehlt.", 13);
-  }
-  &print_debug("InvoiceID: $InvoiceID:", 1);
+    if ( not $BuyerEmail ) {
+        &error_exit( "BuyerEmail fehlt.", 14 );
+    }
+    &print_debug( "BuyerEmail: $BuyerEmail:", 1 );
 
+    if ( not $ReturnURL ) {
+        &error_exit( "ReturnURL nicht angegeben.", 15 );
+    }
+    &print_debug( "ReturnURL: $ReturnURL:", 1 );
 
-  if (not $BuyerEmail)
-  {
-    &error_exit("BuyerEmail fehlt.", 14);
-  }
-  &print_debug("BuyerEmail: $BuyerEmail:", 1);
+    if ( not $CancelURL ) {
+        &error_exit( "CancelURL nicht angegeben.", 16 );
+    }
+    &print_debug( "CancelURL: $CancelURL:", 1 );
 
-
-  if (not $ReturnURL)
-  {
-    &error_exit("ReturnURL nicht angegeben.", 15);
-  }
-  &print_debug("ReturnURL: $ReturnURL:", 1);
-
-
-  if (not $CancelURL)
-  {
-    &error_exit("CancelURL nicht angegeben.", 16);
-  }
-  &print_debug("CancelURL: $CancelURL:", 1);
-
-  # und jetzt abschicken
-  ######################
-  my %response = $pp->SetExpressCheckout
-      ( OrderTotal => $OrderTotal,
-        MaxAmount => $OrderTotal,    # es fällt keine Steuer und kein Shipping an
-        currencyID => 'EUR',
-        InvoiceID  => $InvoiceID,
-        NoShipping => 1,
-        LocaleCode => 'de_DE',
-        BuyerEmail => $BuyerEmail,
-        OrderDescription => $OrderDescription,
-        ReturnURL  => $ReturnURL,
-        CancelURL  => $CancelURL,
-        PageStyle  => $PageStyle,
-        'cpp-header-image' => $cpp_header_image,
+    # und jetzt abschicken
+    ######################
+    my %response = $pp->SetExpressCheckout(
+        OrderTotal => $OrderTotal,
+        MaxAmount => $OrderTotal, # es fällt keine Steuer und kein Shipping an
+        currencyID                => 'EUR',
+        InvoiceID                 => $InvoiceID,
+        NoShipping                => 1,
+        LocaleCode                => 'de_DE',
+        BuyerEmail                => $BuyerEmail,
+        OrderDescription          => $OrderDescription,
+        ReturnURL                 => $ReturnURL,
+        CancelURL                 => $CancelURL,
+        PageStyle                 => $PageStyle,
+        'cpp-header-image'        => $cpp_header_image,
         'cpp-header-border-color' => $cpp_header_border_color,
-        'cpp-header-back-color' => $cpp_header_back_color,
-        'cpp-payflow-color' => $cpp_payflow_color,
-      );
+        'cpp-header-back-color'   => $cpp_header_back_color,
+        'cpp-payflow-color'       => $cpp_payflow_color,
+    );
 
-  if ($debug >= 2)
-  {
-    print "----SetExpressCheckout---------------\n";
-    print Data::Dumper->Dump([\%response], [qw(response)]);
-    print "-------------------------------------\n";
-  }
+    if ( $debug >= 2 ) {
+        print "----SetExpressCheckout---------------\n";
+        print Data::Dumper->Dump( [ \%response ], [qw(response)] );
+        print "-------------------------------------\n";
+    }
 
-  # hat's geklappt?
-  if ($response{'Ack'} ne "Success")
-  {
-    &error_exit("PayPal hat \"". $response{'Ack'} ."\" gemeldet: (" .
-                $response{'Errors'}[0]->{'ErrorCode'} .") ".
-                $response{'Errors'}[0]->{'LongMessage'} ." (CorrelationID: ".
-                $response{'CorrelationID'} .")",
-                18
-               );
-  }
+    # hat's geklappt?
+    if ( $response{'Ack'} ne "Success" ) {
+        &error_exit(
+                  "PayPal hat \""
+                . $response{'Ack'}
+                . "\" gemeldet: ("
+                . $response{'Errors'}[0]->{'ErrorCode'} . ") "
+                . $response{'Errors'}[0]->{'LongMessage'}
+                . " (CorrelationID: "
+                . $response{'CorrelationID'} . ")",
+            18
+        );
+    }
 
-  my $token = $response{'Token'};
+    my $token = $response{'Token'};
 
-  print "Token: $token\n";
-  print "Redirect: https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token\n";
+    print "Token: $token\n";
+    print
+        "Redirect: https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=$token\n";
 
-  foreach my $field (keys %response)
-  {
-    next if $field =~ /^Token|Version|Build|Ack$/;
+    foreach my $field ( keys %response ) {
+        next if $field =~ /^Token|Version|Build|Ack$/;
 
-    print $field, ": ", $response{$field}, "\n";
-  }
+        print $field, ": ", $response{$field}, "\n";
+    }
 }
-
 
 # Zahlungsvorgang Schritt 2
-elsif ($step == 2)
-{
-  # Parameter prüfen
-  ##################
-  if (not $Token)
-  {
-    &error_exit("Token muss angegeben werden.", 20);
-  }
-  &print_debug("Token: $Token:", 1);
+elsif ( $step == 2 ) {
 
+    # Parameter prüfen
+    ##################
+    if ( not $Token ) {
+        &error_exit( "Token muss angegeben werden.", 20 );
+    }
+    &print_debug( "Token: $Token:", 1 );
 
-  # Kunden Checkout Details von PayPal abholen
-  ############################################
-  my %details = $pp->GetExpressCheckoutDetails($Token);
+    # Kunden Checkout Details von PayPal abholen
+    ############################################
+    my %details = $pp->GetExpressCheckoutDetails($Token);
 
-  if ($debug >= 2)
-  {
-    print "------GetExpressCheckoutDetails---------\n";
-    print Data::Dumper->Dump([\%details], [qw(details)]);
-    print "----------------------------------------\n";
-  }
+    if ( $debug >= 2 ) {
+        print "------GetExpressCheckoutDetails---------\n";
+        print Data::Dumper->Dump( [ \%details ], [qw(details)] );
+        print "----------------------------------------\n";
+    }
 
-  # hat's geklappt?
-  if ($details{Ack} ne "Success")
-  {
-    &error_exit("PayPal hat \"". $details{'Ack'} ."\" gemeldet: (" .
-                $details{'Errors'}[0]->{'ErrorCode'} .") ".
-                $details{'Errors'}[0]->{'LongMessage'} ." (CorrelationID: ".
-                $details{'CorrelationID'} .")",
-                28
-               );
-  }
+    # hat's geklappt?
+    if ( $details{Ack} ne "Success" ) {
+        &error_exit(
+                  "PayPal hat \""
+                . $details{'Ack'}
+                . "\" gemeldet: ("
+                . $details{'Errors'}[0]->{'ErrorCode'} . ") "
+                . $details{'Errors'}[0]->{'LongMessage'}
+                . " (CorrelationID: "
+                . $details{'CorrelationID'} . ")",
+            28
+        );
+    }
 
-  # als erstes die PayerID ausgeben
-  my $PayerID = "(noch unbekannt)";
-  $PayerID = $details{PayerID}  if $details{PayerID};
-  print "PayerID: $PayerID\n";
+    # als erstes die PayerID ausgeben
+    my $PayerID = "(noch unbekannt)";
+    $PayerID = $details{PayerID} if $details{PayerID};
+    print "PayerID: $PayerID\n";
 
-  foreach my $field (keys %details)
-  {
-    next if $field =~ /^PayerID|Token|Version|Build|Ack$/;
+    foreach my $field ( keys %details ) {
+        next if $field =~ /^PayerID|Token|Version|Build|Ack$/;
 
-    print $field, ": ", $details{$field}, "\n";
-  }
+        print $field, ": ", $details{$field}, "\n";
+    }
 }
-
 
 # Zahlungsvorgang Schritt 3
-elsif ($step == 3)
-{
-  # Parameter prüfen
-  ##################
-  if (not $OrderTotal)
-  {
-    &error_exit("OrderTotal fehlt.", 6);
-  }
-  &print_debug("OrderTotal: $OrderTotal:", 1);
+elsif ( $step == 3 ) {
 
-  if (not $Token)
-  {
-    &error_exit("Token muss angegeben werden.", 30);
-  }
-  &print_debug("Token: $Token:", 1);
+    # Parameter prüfen
+    ##################
+    if ( not $OrderTotal ) {
+        &error_exit( "OrderTotal fehlt.", 6 );
+    }
+    &print_debug( "OrderTotal: $OrderTotal:", 1 );
 
-  if (not $PayerID)
-  {
-    &error_exit("PayerID muss angegeben werden.", 31);
-  }
-  &print_debug("PayerID: $PayerID:", 1);
+    if ( not $Token ) {
+        &error_exit( "Token muss angegeben werden.", 30 );
+    }
+    &print_debug( "Token: $Token:", 1 );
 
+    if ( not $PayerID ) {
+        &error_exit( "PayerID muss angegeben werden.", 31 );
+    }
+    &print_debug( "PayerID: $PayerID:", 1 );
 
-  # PayPal zur Ausführung der Zahlung auffordern
-  ##############################################
-  my %payinfo = $pp->DoExpressCheckoutPayment
-      (
-       Token => $Token,
-       PaymentAction => 'Sale',
-       PayerID => $PayerID,
-       currencyID => 'EUR',
-       OrderTotal => $OrderTotal,
-      );
+    # PayPal zur Ausführung der Zahlung auffordern
+    ##############################################
+    my %payinfo = $pp->DoExpressCheckoutPayment(
+        Token         => $Token,
+        PaymentAction => 'Sale',
+        PayerID       => $PayerID,
+        currencyID    => 'EUR',
+        OrderTotal    => $OrderTotal,
+    );
 
-  if ($debug >= 2)
-  {
-    print "----DoExpressCheckoutPayment---------------\n";
-    print Data::Dumper->Dump([\%payinfo], [qw(payinfo)]);
-    print "-------------------------------------------\n";
-  }
+    if ( $debug >= 2 ) {
+        print "----DoExpressCheckoutPayment---------------\n";
+        print Data::Dumper->Dump( [ \%payinfo ], [qw(payinfo)] );
+        print "-------------------------------------------\n";
+    }
 
-  # hat's geklappt?
-  if ($payinfo{'Ack'} ne "Success")
-  {
-    &error_exit("PayPal hat \"". $payinfo{'Ack'} ."\" gemeldet: (" .
-                $payinfo{'Errors'}[0]->{'ErrorCode'} .") ".
-                $payinfo{'Errors'}[0]->{'LongMessage'} ." (CorrelationID: ".
-                $payinfo{'CorrelationID'} .")",
-                38
-               );
-  }
+    # hat's geklappt?
+    if ( $payinfo{'Ack'} ne "Success" ) {
+        &error_exit(
+                  "PayPal hat \""
+                . $payinfo{'Ack'}
+                . "\" gemeldet: ("
+                . $payinfo{'Errors'}[0]->{'ErrorCode'} . ") "
+                . $payinfo{'Errors'}[0]->{'LongMessage'}
+                . " (CorrelationID: "
+                . $payinfo{'CorrelationID'} . ")",
+            38
+        );
+    }
 
-  foreach my $field (keys %payinfo)
-  {
-    next if $field =~ /^PayerID|Token|Version|Build|Ack$/;
+    foreach my $field ( keys %payinfo ) {
+        next if $field =~ /^PayerID|Token|Version|Build|Ack$/;
 
-    print $field, ": ", $payinfo{$field}, "\n";
-  }
+        print $field, ": ", $payinfo{$field}, "\n";
+    }
 }
 
-else
-{
-  print "Parameter \"step\" muss zwischen 1 und 3 liegen.\n";
+else {
+    print "Parameter \"step\" muss zwischen 1 und 3 liegen.\n";
 }
 
 &cleanup_and_exit();
 
-
 ############################################
 # Hilfsroutinen
 ############################################
-sub print_error
-{
-  my ($text) = @_;
+sub print_error {
+    my ($text) = @_;
 
-  print STDERR "ERROR: ". $text ."\n";
+    print STDERR "ERROR: " . $text . "\n";
 
-  $errors_occurred++;
+    $errors_occurred++;
 
-  if ($errors_occurred > 10)
-  {
-    print STDERR "ERROR: Zu viele Fehler ($errors_occurred) aufgetreten -> Abbruch\n";
-    &cleanup_and_exit();
-  }
+    if ( $errors_occurred > 10 ) {
+        print STDERR
+            "ERROR: Zu viele Fehler ($errors_occurred) aufgetreten -> Abbruch\n";
+        &cleanup_and_exit();
+    }
 }
 
-sub print_debug
-{
-  my ($text, $debug_level) = @_;
+sub print_debug {
+    my ( $text, $debug_level ) = @_;
 
-  $debug_level = 0  unless $debug_level;
+    $debug_level = 0 unless $debug_level;
 
-  if ($debug >= $debug_level)
-  {
-    print "DEBUG($debug_level): ". $text ."\n";
-  }
+    if ( $debug >= $debug_level ) {
+        print "DEBUG($debug_level): " . $text . "\n";
+    }
 }
 
-sub error_exit
-{
-  my ($text, $exitcode) = @_;
+sub error_exit {
+    my ( $text, $exitcode ) = @_;
 
-  &print_error($text);
-  &cleanup_and_exit($exitcode);
+    &print_error($text);
+    &cleanup_and_exit($exitcode);
 }
 
 # nötige Aufräumarbeiten am Ende
-sub cleanup
-{
-  &print_debug("cleanup done.", 1);
+sub cleanup {
+    &print_debug( "cleanup done.", 1 );
 }
 
 # Exitcode als optionaler Parameter
-sub cleanup_and_exit
-{
-  my ($exitcode) = @_;
-  $exitcode = 0  unless $exitcode;
+sub cleanup_and_exit {
+    my ($exitcode) = @_;
+    $exitcode = 0 unless $exitcode;
 
-  &cleanup();
+    &cleanup();
 
-  if ($errors_occurred)
-  {
-    &print_debug("Fertig, aber es sind $errors_occurred Fehler aufgetreten.\n", 1);
-    exit 100+$errors_occurred  unless $exitcode;
-  }
+    if ($errors_occurred) {
+        &print_debug(
+            "Fertig, aber es sind $errors_occurred Fehler aufgetreten.\n",
+            1
+        );
+        exit 100 + $errors_occurred unless $exitcode;
+    }
 
-  &print_debug("$self (v$VERSION) beendet.\n", 1);
-  exit $exitcode;
+    &print_debug( "$self (v$VERSION) beendet.\n", 1 );
+    exit $exitcode;
 }
-
-
 
 #----------------------------------------------------------------------------
 # Doku

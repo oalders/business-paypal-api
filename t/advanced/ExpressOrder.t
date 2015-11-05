@@ -7,7 +7,7 @@ else {
     plan tests => 8;
 }
 
-use_ok( 'Business::PayPal::API::ExpressCheckout' );
+use_ok('Business::PayPal::API::ExpressCheckout');
 #########################
 
 require 't/API.pl';
@@ -17,7 +17,7 @@ my %args = do_args();
 ## we're passing more to new() than we normally would because we're
 ## using %args elsewhere below. See documentation for the correct
 ## arguments.
-my $pp = new Business::PayPal::API::ExpressCheckout( %args );
+my $pp = new Business::PayPal::API::ExpressCheckout(%args);
 
 ##
 ## set checkout info
@@ -75,7 +75,7 @@ die "Need a PayerID.\n" unless $payerid;
 ##
 ## get checkout details
 ##
-my %details = $pp->GetExpressCheckoutDetails( $token );
+my %details = $pp->GetExpressCheckoutDetails($token);
 is( $details{Token}, $token, "details ok" );
 
 #use Data::Dumper;
@@ -94,7 +94,7 @@ my %payment = (
 ## do checkout
 ##
 #$Business::PayPal::API::Debug = 1;
-my %payinfo = $pp->DoExpressCheckoutPayment( %payment );
+my %payinfo = $pp->DoExpressCheckoutPayment(%payment);
 
 #$Business::PayPal::API::Debug = 0;
 #If Order is successful then authorize it, then void it.
@@ -102,19 +102,19 @@ my %payinfo = $pp->DoExpressCheckoutPayment( %payment );
 if ( like( $payinfo{Ack}, qr/Success/, "successful payment" ) ) {
     my $transid = $payinfo{TransactionID};
     my $amount  = '25.43';
-    use_ok( 'Business::PayPal::API::AuthorizationRequest' );
+    use_ok('Business::PayPal::API::AuthorizationRequest');
     %args = do_args();
 
     #$Business::PayPal::API::Debug = 1;
-    $ppauth = new Business::PayPal::API::AuthorizationRequest( %args );
+    $ppauth = new Business::PayPal::API::AuthorizationRequest(%args);
     my %resp = $ppauth->DoAuthorizationRequest(
         TransactionID => $transid,
         Amount        => $amount
     );
     like( $resp{Ack}, qr/Succes/, 'Successful order authorization' );
-    use_ok( 'Business::PayPal::API::VoidRequest' );
+    use_ok('Business::PayPal::API::VoidRequest');
     %args = do_args();
-    my $ppvoid = new Business::PayPal::API::VoidRequest( %args );
+    my $ppvoid = new Business::PayPal::API::VoidRequest(%args);
     %resp1 = $ppvoid->DoVoidRequest(
         AuthorizationID => $transid,
         Note            => 'Voided'

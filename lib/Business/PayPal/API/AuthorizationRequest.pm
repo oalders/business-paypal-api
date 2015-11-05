@@ -35,8 +35,8 @@ sub DoAuthorizationRequest {
 
     my $request
         = SOAP::Data->name(
-        DoAuthorizationRequest => \SOAP::Data->value( @ref_trans ) )
-        ->type( "ns:AuthorizationRequestType" );
+        DoAuthorizationRequest => \SOAP::Data->value(@ref_trans) )
+        ->type("ns:AuthorizationRequestType");
 
     my $som = $self->doCall( DoAuthorizationReq => $request )
         or return;
@@ -52,7 +52,8 @@ sub DoAuthorizationRequest {
     $self->getFields(
         $som, $path,
         \%response,
-        {   TransactionID => 'TransactionID',
+        {
+            TransactionID => 'TransactionID',
             Amount        => 'Amount',
         }
     );

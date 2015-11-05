@@ -26,14 +26,15 @@ my %args = do_args();
 
 my ( $transale, $tranvoid, $tranbasic, $tranrefund );
 my ( $ppsale, $ppvoid, $ppbasic, $pprefund, $pprefund1, $ppcap, $ppcap1 );
-my (%respsale, %resprefund, %resprefund1, %respbasic,
+my (
+    %respsale, %resprefund, %resprefund1, %respbasic,
     %respcap,  %respcap1,   %respvoid
 );
 
 #Test Full Refund on Sale
 
 #$Business::PayPal::API::Debug=1;
-$ppsale   = Business::PayPal::API->new( %args );
+$ppsale   = Business::PayPal::API->new(%args);
 %respsale = $ppsale->DoDirectPaymentRequest(
     PaymentAction     => 'Sale',
     OrderTotal        => 11.87,
@@ -42,7 +43,7 @@ $ppsale   = Business::PayPal::API->new( %args );
     CreditCardType    => 'Visa',
     CreditCardNumber  => '4561435600988217',
     ExpMonth          => '01',
-    ExpYear           => +( localtime )[5] + 1901,
+    ExpYear           => +(localtime)[5] + 1901,
     CVV2              => '123',
     FirstName         => 'JP',
     LastName          => 'Morgan',
@@ -63,7 +64,7 @@ if ( like( $respsale{'Ack'}, qr/Success/, 'Direct Payment Sale' ) ) {
     $transale = $respsale{'TransactionID'};
 
     #$Business::PayPal::API::Debug=1;
-    $pprefund   = Business::PayPal::API->new( %args );
+    $pprefund   = Business::PayPal::API->new(%args);
     %resprefund = $pprefund->RefundTransaction(
         TransactionID => $transale,
         RefundType    => 'Full',
@@ -79,7 +80,7 @@ if ( like( $respsale{'Ack'}, qr/Success/, 'Direct Payment Sale' ) ) {
 %args = do_args();
 
 #$Business::PayPal::API::Debug=0;
-$ppbasic   = Business::PayPal::API->new( %args );
+$ppbasic   = Business::PayPal::API->new(%args);
 %respbasic = $ppbasic->DoDirectPaymentRequest(
     PaymentAction     => 'Authorization',
     OrderTotal        => 13.87,
@@ -88,7 +89,7 @@ $ppbasic   = Business::PayPal::API->new( %args );
     CreditCardType    => 'Visa',
     CreditCardNumber  => '4561435600988217',
     ExpMonth          => '01',
-    ExpYear           => +( localtime )[5] + 1901,
+    ExpYear           => +(localtime)[5] + 1901,
     CVV2              => '123',
     FirstName         => 'JP',
     LastName          => 'Morgan',
@@ -105,17 +106,17 @@ $ppbasic   = Business::PayPal::API->new( %args );
 );
 
 #$Business::PayPal::API::Debug=0;
-if (like(
+if (
+    like(
         $respbasic{'Ack'}, qr/Success/,
         'Direct Payment Basic Authorization'
     )
-    )
-{
+    ) {
     $tranbasic = $respbasic{'TransactionID'};
 
     #Test Partial Capture
     #$Business::PayPal::API::Debug=1;
-    $ppcap = Business::PayPal::API->new( %args );
+    $ppcap = Business::PayPal::API->new(%args);
 
     %respcap = $ppcap->DoCaptureRequest(
         AuthorizationID => $tranbasic,
@@ -129,7 +130,7 @@ if (like(
 
     #Test Full Capture
     #$Business::PayPal::API::Debug=1;
-    $ppcap1   = Business::PayPal::API->new( %args );
+    $ppcap1   = Business::PayPal::API->new(%args);
     %respcap1 = $ppcap1->DoCaptureRequest(
         AuthorizationID => $tranbasic,
         CompleteType    => 'Complete',
@@ -142,7 +143,7 @@ if (like(
 else { skip( "direct payment auth failed", 2 ) }
 
 #Test Void
-$ppbasic   = Business::PayPal::API->new( %args );
+$ppbasic   = Business::PayPal::API->new(%args);
 %respbasic = $ppbasic->DoDirectPaymentRequest(
     PaymentAction     => 'Authorization',
     OrderTotal        => 17.37,
@@ -151,7 +152,7 @@ $ppbasic   = Business::PayPal::API->new( %args );
     CreditCardType    => 'Visa',
     CreditCardNumber  => '4561435600988217',
     ExpMonth          => '01',
-    ExpYear           => +( localtime )[5] + 1901,
+    ExpYear           => +(localtime)[5] + 1901,
     CVV2              => '123',
     FirstName         => 'JP',
     LastName          => 'Morgan',
@@ -168,7 +169,7 @@ $ppbasic   = Business::PayPal::API->new( %args );
 );
 
 #$Business::PayPal::API::Debug=1;
-$ppvoid   = Business::PayPal::API->new( %args );
+$ppvoid   = Business::PayPal::API->new(%args);
 %respvoid = $ppvoid->DoVoidRequest(
     AuthorizationID => $respbasic{TransactionID},
     Note            => 'Authorization Void',

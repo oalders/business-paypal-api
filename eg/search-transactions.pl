@@ -72,7 +72,7 @@ sub search {
         $self->payer ? ( Payer => $self->payer ) : (),
     );
 
-    unless (ref $response[0] ) {
+    unless ( ref $response[0] ) {
         my %error = @response;
         p %error;
         die;

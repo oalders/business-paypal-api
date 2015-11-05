@@ -7,14 +7,14 @@ else {
     plan tests => 2;
 }
 
-use_ok( 'Business::PayPal::API::GetTransactionDetails' );
+use_ok('Business::PayPal::API::GetTransactionDetails');
 #########################
 
 require 't/API.pl';
 
 my %args = do_args();
 
-my $pp = new Business::PayPal::API::GetTransactionDetails( %args );
+my $pp = new Business::PayPal::API::GetTransactionDetails(%args);
 
 print STDERR <<"_TRANSID_";
 

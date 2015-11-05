@@ -8,14 +8,14 @@ else {
     plan tests => 3;
 }
 
-use_ok( 'Business::PayPal::API::RecurringPayments' );
+use_ok('Business::PayPal::API::RecurringPayments');
 #########################
 
 require 't/API.pl';
 
 my %args = do_args();
 
-my $pp = new Business::PayPal::API::RecurringPayments( %args );
+my $pp = new Business::PayPal::API::RecurringPayments(%args);
 
 #$Business::PayPal::API::Debug = 1;
 my %response = $pp->SetCustomerBillingAgreement(
@@ -116,7 +116,7 @@ my %profile = $pp->CreateRecurringPaymentsProfile(
 
 ## GetBillingAgreementCustomerDetails
 #$Business::PayPal::API::Debug = 1;
-my %details = $pp->GetBillingAgreementCustomerDetails( $token );
+my %details = $pp->GetBillingAgreementCustomerDetails($token);
 
 #$Business::PayPal::API::Debug = 0;
 

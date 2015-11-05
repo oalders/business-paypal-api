@@ -45,8 +45,8 @@ sub TransactionSearch {
 
     my $request
         = SOAP::Data->name(
-        TransactionSearchRequest => \SOAP::Data->value( @trans ) )
-        ->type( "ns:TransactionSearchRequestType" );
+        TransactionSearchRequest => \SOAP::Data->value(@trans) )
+        ->type("ns:TransactionSearchRequestType");
 
     my $som = $self->doCall( TransactionSearchReq => $request )
         or return;
@@ -62,7 +62,8 @@ sub TransactionSearch {
     return $self->getFieldsList(
         $som,
         $path . '/PaymentTransactions',
-        {   Timestamp        => 'Timestamp',
+        {
+            Timestamp        => 'Timestamp',
             Timezone         => 'Timezone',
             Type             => 'Type',
             Payer            => 'Payer',

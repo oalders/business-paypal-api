@@ -78,26 +78,29 @@ sub SetExpressCheckout {
                 { currencyID => $currencyID, xmlns => $self->C_xmlns_ebay } );
         }
         elsif ( $field eq 'Address' ) {
-            my $address = $args{$field};
+            my $address       = $args{$field};
             my %address_types = (
-                                 Name            => 'xs:string',
-                                 Street1         => 'xs:string',
-                                 Street2         => 'xs:string',
-                                 CityName        => 'xs:string',
-                                 StateOrProvince => 'xs:string',
-                                 Country         => 'xs:string',
-                                 PostalCode      => 'xs:string',
-                                );
+                Name            => 'xs:string',
+                Street1         => 'xs:string',
+                Street2         => 'xs:string',
+                CityName        => 'xs:string',
+                StateOrProvince => 'xs:string',
+                Country         => 'xs:string',
+                PostalCode      => 'xs:string',
+            );
             my @address;
-            foreach my $k (keys %address_types) {
-                if (defined $address->{$k}) {
-                    push @address, SOAP::Data->name( $k => $address->{$k} )->type($address_types{$k});
+            foreach my $k ( keys %address_types ) {
+                if ( defined $address->{$k} ) {
+                    push @address,
+                        SOAP::Data->name( $k => $address->{$k} )
+                        ->type( $address_types{$k} );
                 }
             }
             if (@address) {
-                push @secrd, SOAP::Data->name($field => \SOAP::Data->value ( @address )
-                                              ->type( $types{$field} )
-                                              ->attr( { xmlns => $self->C_xmlns_ebay } ) );
+                push @secrd,
+                    SOAP::Data->name( $field =>
+                        \SOAP::Data->value(@address)->type( $types{$field} )
+                        ->attr( { xmlns => $self->C_xmlns_ebay } ) );
             }
         }
         else {
@@ -116,18 +119,17 @@ sub SetExpressCheckout {
     }
     push @secrd,
         SOAP::Data->name(
-        BillingAgreementDetails => \SOAP::Data->value( @btypes ) )
+        BillingAgreementDetails => \SOAP::Data->value(@btypes) )
         if $args{'BillingType'};
 
     my $request = SOAP::Data->name(
         SetExpressCheckoutRequest => \SOAP::Data->value(
             $self->version_req,
             SOAP::Data->name(
-                SetExpressCheckoutRequestDetails =>
-                    \SOAP::Data->value( @secrd )
-            )->attr( { xmlns => $self->C_xmlns_ebay } ),
+                SetExpressCheckoutRequestDetails => \SOAP::Data->value(@secrd)
+                )->attr( { xmlns => $self->C_xmlns_ebay } ),
         )
-    )->type( 'ns:SetExpressCheckoutRequestType' );
+    )->type('ns:SetExpressCheckoutRequestType');
 
     my $som = $self->doCall( SetExpressCheckoutReq => $request )
         or return;
@@ -152,10 +154,10 @@ sub GetExpressCheckoutDetails {
     my $request = SOAP::Data->name(
         GetExpressCheckoutDetailsRequest => \SOAP::Data->value(
             $self->version_req,
-            SOAP::Data->name( Token => $token )->type( 'xs:string' )
+            SOAP::Data->name( Token => $token )->type('xs:string')
                 ->attr( { xmlns => $self->C_xmlns_ebay } ),
         )
-    )->type( 'ns:GetExpressCheckoutRequestType' );
+    )->type('ns:GetExpressCheckoutRequestType');
 
     my $som = $self->doCall( GetExpressCheckoutDetailsReq => $request )
         or return;
@@ -172,7 +174,8 @@ sub GetExpressCheckoutDetails {
         $som,
         "$path/GetExpressCheckoutDetailsResponseDetails",
         \%details,
-        {   Token           => 'Token',
+        {
+            Token           => 'Token',
             Custom          => 'Custom',
             InvoiceID       => 'InvoiceID',
             ContactPhone    => 'ContactPhone',
@@ -255,7 +258,8 @@ sub DoExpressCheckoutPayment {
     push @payment_details,
         SOAP::Data->name( OrderTotal => $args{OrderTotal} )
         ->type( $pd_types{OrderTotal} )->attr(
-        {   currencyID => $args{currencyID},
+        {
+            currencyID => $args{currencyID},
             xmlns      => $self->C_xmlns_ebay
         }
         );
@@ -287,7 +291,7 @@ sub DoExpressCheckoutPayment {
     if ( scalar @ship_types ) {
         push @payment_details,
             SOAP::Data->name( ShipToAddress =>
-                \SOAP::Data->value( @ship_types )->type( 'ebl:AddressType' )
+                \SOAP::Data->value(@ship_types)->type('ebl:AddressType')
                 ->attr( { xmlns => $self->C_xmlns_ebay } ), );
     }
 
@@ -307,8 +311,8 @@ sub DoExpressCheckoutPayment {
     if ( scalar @payment_details_item ) {
         push @payment_details,
             SOAP::Data->name(
-            PaymentDetailsItem => \SOAP::Data->value( @payment_details_item )
-                ->type( 'ebl:PaymentDetailsItemType' )
+            PaymentDetailsItem => \SOAP::Data->value(@payment_details_item)
+                ->type('ebl:PaymentDetailsItemType')
                 ->attr( { xmlns => $self->C_xmlns_ebay } ), );
     }
 
@@ -325,8 +329,8 @@ sub DoExpressCheckoutPayment {
             ->type( $types{PayerID} )
             ->attr( { xmlns => $self->C_xmlns_ebay } ),
         SOAP::Data->name(
-            PaymentDetails => \SOAP::Data->value( @payment_details )
-                ->type( 'ebl:PaymentDetailsType' )
+            PaymentDetails => \SOAP::Data->value(@payment_details)
+                ->type('ebl:PaymentDetailsType')
                 ->attr( { xmlns => $self->C_xmlns_ebay } ),
         ),
         SOAP::Data->name( ReturnFMFDetails => $args{ReturnFMFDetails} )
@@ -342,9 +346,9 @@ sub DoExpressCheckoutPayment {
             $self->version_req,
             SOAP::Data->name(
                 DoExpressCheckoutPaymentRequestDetails =>
-                    \SOAP::Data->value( @express_details )
-                    ->type( 'ns:DoExpressCheckoutPaymentRequestDetailsType' )
-            )->attr( { xmlns => $self->C_xmlns_ebay } ),
+                    \SOAP::Data->value(@express_details)
+                    ->type('ns:DoExpressCheckoutPaymentRequestDetailsType')
+                )->attr( { xmlns => $self->C_xmlns_ebay } ),
         )
     );
 
@@ -363,7 +367,8 @@ sub DoExpressCheckoutPayment {
         $som,
         "$path/DoExpressCheckoutPaymentResponseDetails",
         \%response,
-        {   Token                 => 'Token',
+        {
+            Token                 => 'Token',
             BillingAgreementID    => 'BillingAgreementID',
             TransactionID         => 'PaymentInfo/TransactionID',
             TransactionType       => 'PaymentInfo/TransactionType',

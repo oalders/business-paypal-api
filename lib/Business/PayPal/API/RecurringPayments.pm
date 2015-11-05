@@ -63,17 +63,17 @@ sub SetCustomerBillingAgreement {
     }
     push @scba,
         SOAP::Data->name(
-        BillingAgreementDetails => \SOAP::Data->value( @btypes ) );
+        BillingAgreementDetails => \SOAP::Data->value(@btypes) );
 
     my $request = SOAP::Data->name(
         SetCustomerBillingAgreementRequest => \SOAP::Data->value(
             $self->version_req,    #$API_VERSION,
             SOAP::Data->name(
                 SetCustomerBillingAgreementRequestDetails =>
-                    \SOAP::Data->value( @scba )
-            )->attr( { xmlns => $self->C_xmlns_ebay } ),
+                    \SOAP::Data->value(@scba)
+                )->attr( { xmlns => $self->C_xmlns_ebay } ),
         )
-    )->type( 'ns:SetCustomerBillingAgreementRequestDetailsType' );
+    )->type('ns:SetCustomerBillingAgreementRequestDetailsType');
 
     my $som = $self->doCall( SetCustomerBillingAgreementReq => $request )
         or return;
@@ -98,10 +98,10 @@ sub GetBillingAgreementCustomerDetails {
     my $request = SOAP::Data->name(
         GetBillingAgreementCustomerDetailsRequest => \SOAP::Data->value(
             $self->version_req,
-            SOAP::Data->name( Token => $token )->type( 'xs:string' )
+            SOAP::Data->name( Token => $token )->type('xs:string')
                 ->attr( { xmlns => $self->C_xmlns_ebay } ),
         )
-    )->type( 'ns:GetBillingAgreementCustomerDetailsResponseType' );
+    )->type('ns:GetBillingAgreementCustomerDetailsResponseType');
 
     my $som
         = $self->doCall( GetBillingAgreementCustomerDetailsReq => $request )
@@ -119,7 +119,8 @@ sub GetBillingAgreementCustomerDetails {
         $som,
         "$path/GetBillingAgreementCustomerDetailsResponseDetails",
         \%details,
-        {   Token => 'Token',
+        {
+            Token => 'Token',
 
             Payer         => 'PayerInfo/Payer',
             PayerID       => 'PayerInfo/PayerID',
@@ -281,12 +282,11 @@ sub CreateRecurringPaymentsProfile {
             ->type( $schedtype{$field} );
     }
     push @sched,
-        SOAP::Data->name(
-        TrialPeriod => \SOAP::Data->value( @trialbilltype ) )
+        SOAP::Data->name( TrialPeriod => \SOAP::Data->value(@trialbilltype) )
         ;    #->type( 'ns:BillingPeriodDetailsType' );
     push @sched,
         SOAP::Data->name(
-        PaymentPeriod => \SOAP::Data->value( @paymentbilltype ) )
+        PaymentPeriod => \SOAP::Data->value(@paymentbilltype) )
         ;    #->type( 'ns:BillingPeriodDetailsType' );
 
     ## this gets pushed into profile details
@@ -306,7 +306,7 @@ sub CreateRecurringPaymentsProfile {
         ( my $real_field = $field ) =~ s/^CCPayer//;
         push @payeraddr,
             SOAP::Data->name( $real_field => $args{$field} )
-            ->type( payaddrtype {$field} );
+            ->type( payaddrtype { $field } );
     }
 
     ## credit card type
@@ -316,7 +316,7 @@ sub CreateRecurringPaymentsProfile {
         ( my $real_field = $field ) =~ s/^CC//;
         push @payeraddr,
             SOAP::Data->name( $real_field => $args{$field} )
-            ->type( payaddrtype {$field} );
+            ->type( payaddrtype { $field } );
     }
 
     ## this gets pushed onto the top
@@ -329,21 +329,21 @@ sub CreateRecurringPaymentsProfile {
     }
     push @profdetail,
         SOAP::Data->name(
-        SubscriberShipperAddress => \SOAP::Data->value( @shipaddr ) );
+        SubscriberShipperAddress => \SOAP::Data->value(@shipaddr) );
 
     ## crappard?
     my @crpprd = ();
     push @crpprd, SOAP::Data->name( Token => $args{Token} );
     push @crpprd,
         SOAP::Data->name(
-        CreditCardDetails => \SOAP::Data->value( @creditcarddetails ) )
+        CreditCardDetails => \SOAP::Data->value(@creditcarddetails) )
         ;    #->type( 'ns:CreditCardDetailsType' );
     push @crpprd,
         SOAP::Data->name(
-        RecurringPaymentProfileDetails => \SOAP::Data->value( @profdetail ) )
+        RecurringPaymentProfileDetails => \SOAP::Data->value(@profdetail) )
         ;    #->type( 'ns:RecurringPaymentProfileDetailsType' );
     push @crpprd,
-        SOAP::Data->name( ScheduleDetails => \SOAP::Data->value( @sched ) )
+        SOAP::Data->name( ScheduleDetails => \SOAP::Data->value(@sched) )
         ;    #->type( 'ns:ScheduleDetailsType' );
 
     my $request = SOAP::Data->name(
@@ -354,7 +354,7 @@ sub CreateRecurringPaymentsProfile {
             $self->version_req,
             SOAP::Data->name(
                 CreateRecurringPaymentsProfileRequestDetails =>
-                    \SOAP::Data->value( @crpprd )
+                    \SOAP::Data->value(@crpprd)
             )->attr( { xmlns => $self->C_xmlns_ebay } )
             )
     );    #->type( 'ns:CreateRecurringPaymentsProfileRequestType' );
@@ -430,7 +430,8 @@ sub DoReferenceTransaction {
     push @payment_details,
         SOAP::Data->name( OrderTotal => $args{OrderTotal} )
         ->type( $pd_types{OrderTotal} )->attr(
-        {   currencyID => $args{currencyID},
+        {
+            currencyID => $args{currencyID},
             xmlns      => $self->C_xmlns_ebay
         }
         );
@@ -462,7 +463,7 @@ sub DoReferenceTransaction {
     if ( scalar @ship_types ) {
         push @payment_details,
             SOAP::Data->name( ShipToAddress =>
-                \SOAP::Data->value( @ship_types )->type( 'ebl:AddressType' )
+                \SOAP::Data->value(@ship_types)->type('ebl:AddressType')
                 ->attr( { xmlns => $self->C_xmlns_ebay } ), );
     }
 
@@ -482,8 +483,8 @@ sub DoReferenceTransaction {
     if ( scalar @payment_details_item ) {
         push @payment_details,
             SOAP::Data->name(
-            PaymentDetailsItem => \SOAP::Data->value( @payment_details_item )
-                ->type( 'ebl:PaymentDetailsItemType' )
+            PaymentDetailsItem => \SOAP::Data->value(@payment_details_item)
+                ->type('ebl:PaymentDetailsItemType')
                 ->attr( { xmlns => $self->C_xmlns_ebay } ), );
     }
 
@@ -498,8 +499,8 @@ sub DoReferenceTransaction {
             ->type( $types{PaymentAction} )
             ->attr( { xmlns => $self->C_xmlns_ebay } ),
         SOAP::Data->name(
-            PaymentDetails => \SOAP::Data->value( @payment_details )
-                ->type( 'ebl:PaymentDetailsType' )
+            PaymentDetails => \SOAP::Data->value(@payment_details)
+                ->type('ebl:PaymentDetailsType')
                 ->attr( { xmlns => $self->C_xmlns_ebay } ),
         ),
     );
@@ -512,9 +513,9 @@ sub DoReferenceTransaction {
             $self->version_req,
             SOAP::Data->name(
                 DoReferenceTransactionRequestDetails =>
-                    \SOAP::Data->value( @reference_details )
-                    ->type( 'ns:DoReferenceTransactionRequestDetailsType' )
-            )->attr( { xmlns => $self->C_xmlns_ebay } ),
+                    \SOAP::Data->value(@reference_details)
+                    ->type('ns:DoReferenceTransactionRequestDetailsType')
+                )->attr( { xmlns => $self->C_xmlns_ebay } ),
         )
     );
 
@@ -533,7 +534,8 @@ sub DoReferenceTransaction {
         $som,
         "$path/DoReferenceTransactionResponseDetails",
         \%response,
-        {   BillingAgreementID => 'BillingAgreementID',
+        {
+            BillingAgreementID => 'BillingAgreementID',
             TransactionID      => 'PaymentInfo/TransactionID',
             TransactionType    => 'PaymentInfo/TransactionType',
             PaymentType        => 'PaymentInfo/PaymentType',

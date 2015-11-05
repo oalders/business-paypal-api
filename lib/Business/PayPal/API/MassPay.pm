@@ -24,7 +24,7 @@ sub MassPay {
         EmailSubject => 'xs:string',
         Version      => 'xsd:string',
 
-#                  ReceiverType => 'ebl:ReceiverInfoCodeType',  ## EmailAddress | UserID
+        #                  ReceiverType => 'ebl:ReceiverInfoCodeType',  ## EmailAddress | UserID
     );
 
     my %attr = (
@@ -67,7 +67,7 @@ sub MassPay {
         delete $mpi_type{ReceiverID};
     }
 
-    for my $rcpt ( @recipients ) {
+    for my $rcpt (@recipients) {
         my @rcpt = ();
         for my $type ( keys %mpi_type ) {
             next unless $mpi_type{$type};
@@ -85,13 +85,13 @@ sub MassPay {
         }
 
         push @masspay,
-            SOAP::Data->name( MassPayItem => \SOAP::Data->value( @rcpt ) )
-            ->type( "ns:MassPayRequestItemType" );
+            SOAP::Data->name( MassPayItem => \SOAP::Data->value(@rcpt) )
+            ->type("ns:MassPayRequestItemType");
     }
 
     my $request
-        = SOAP::Data->name( MassPayRequest => \SOAP::Data->value( @masspay ) )
-        ->type( "ns:MassPayRequestType" );
+        = SOAP::Data->name( MassPayRequest => \SOAP::Data->value(@masspay) )
+        ->type("ns:MassPayRequestType");
 
     my $som = $self->doCall( MassPayReq => $request )
         or return;

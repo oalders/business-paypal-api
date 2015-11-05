@@ -12,10 +12,12 @@ else {
     plan tests => 14;
 }
 
-use_ok( 'Business::PayPal::API::TransactionSearch' );
-use_ok( 'Business::PayPal::API::GetTransactionDetails' );
+use_ok('Business::PayPal::API::TransactionSearch');
+use_ok('Business::PayPal::API::GetTransactionDetails');
 
-sub rndStr{ join'', @_[ map{ rand @_ } 1 .. shift ] }
+sub rndStr {
+    join '', @_[ map { rand @_ } 1 .. shift ];
+}
 #########################
 
 require 't/API.pl';
@@ -30,18 +32,19 @@ These tests verify the options work.
 
 my $itemName;
 
-if (-f 'options-payment.html') {
-    open(OPTIONS_PAY_HTML_READ, "<", "options-payment.html");
-    while (my $line = <OPTIONS_PAY_HTML_READ>) {
+if ( -f 'options-payment.html' ) {
+    open( OPTIONS_PAY_HTML_READ, "<", "options-payment.html" );
+    while ( my $line = <OPTIONS_PAY_HTML_READ> ) {
         $itemName = $1 if $line =~ /Field\s*Options\s*Tester:\s*([A-Z]+)/;
     }
     close OPTIONS_PAY_HTML_READ;
 }
-if (defined $itemName) {
+if ( defined $itemName ) {
     print STDERR "Using existing test transaction with name \"$itemName\"\n";
-} else {
-    $itemName = rndStr(10, 'A' .. 'Z');
-    open(OPTIONS_PAY_HTML, ">", "options-payment.html");
+}
+else {
+    $itemName = rndStr( 10, 'A' .. 'Z' );
+    open( OPTIONS_PAY_HTML, ">", "options-payment.html" );
     print OPTIONS_PAY_HTML <<_OPTIONS_PAYMENT_DATA_
 <html>
 <body>
@@ -76,22 +79,28 @@ and use the sandbox buyer account to make the payment.
 _OPTIONS_LINK_
 }
 
-
 my $startdate = '1998-01-01T01:45:10.00Z';
 
-my $ts   = new Business::PayPal::API::TransactionSearch( %args );
-my $td   = new Business::PayPal::API::GetTransactionDetails( %args );
+my $ts = new Business::PayPal::API::TransactionSearch(%args);
+my $td = new Business::PayPal::API::GetTransactionDetails(%args);
 
-my $resp = $ts->TransactionSearch(StartDate     => $startdate);
+my $resp = $ts->TransactionSearch( StartDate => $startdate );
 my %detail;
 
-foreach my $record (@{$resp}) {
-    %detail = $td->GetTransactionDetails(TransactionID => $record->{TransactionID});
+foreach my $record ( @{$resp} ) {
+    %detail = $td->GetTransactionDetails(
+        TransactionID => $record->{TransactionID} );
     last if $detail{PII_Name} =~ /$itemName/;
     %detail = {};
 }
-like($detail{PaymentItems}[0]{Name}, qr/$itemName/, 'Found field options test transaction');
-like($detail{PII_Name}, qr/$itemName/, 'Found field options test transaction');
+like(
+    $detail{PaymentItems}[0]{Name}, qr/$itemName/,
+    'Found field options test transaction'
+);
+like(
+    $detail{PII_Name}, qr/$itemName/,
+    'Found field options test transaction'
+);
 
 =pod
 
@@ -112,10 +121,18 @@ documentation.
 
 =cut
 
-foreach my $options ($detail{PaymentItems}[0]{Options}, $detail{PII_Options}[0]) {
-    ok(scalar(keys %$options) == 2, "The PaymentItems Options has 2 elements");
-    ok(defined $options->{firstOption}, "'firstOption' is present");
-    ok($options->{firstOption} eq 'Yes', "'firstOption' is selected as 'Yes'");
-    ok(defined $options->{size}, "'size' option is present");
-    ok($options->{size} eq "Large", "'size' option is selected as 'Large'");
+foreach
+    my $options ( $detail{PaymentItems}[0]{Options}, $detail{PII_Options}[0] )
+{
+    ok(
+        scalar( keys %$options ) == 2,
+        "The PaymentItems Options has 2 elements"
+    );
+    ok( defined $options->{firstOption}, "'firstOption' is present" );
+    ok(
+        $options->{firstOption} eq 'Yes',
+        "'firstOption' is selected as 'Yes'"
+    );
+    ok( defined $options->{size},    "'size' option is present" );
+    ok( $options->{size} eq "Large", "'size' option is selected as 'Large'" );
 }

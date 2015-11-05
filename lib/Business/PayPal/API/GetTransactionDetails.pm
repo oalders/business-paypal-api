@@ -17,13 +17,13 @@ sub GetTransactionDetails {
     my @trans = (
         $self->version_req,
         SOAP::Data->name( TransactionID => $args{TransactionID} )
-            ->type( 'xs:string' ),
+            ->type('xs:string'),
     );
 
     my $request
         = SOAP::Data->name(
-        GetTransactionDetailsRequest => \SOAP::Data->value( @trans ) )
-        ->type( "ns:GetTransactionDetailsRequestType" );
+        GetTransactionDetailsRequest => \SOAP::Data->value(@trans) )
+        ->type("ns:GetTransactionDetailsRequestType");
 
     my $som = $self->doCall( GetTransactionDetailsReq => $request )
         or return;
@@ -41,7 +41,8 @@ sub GetTransactionDetails {
     $self->getFields(
         $som, $path,
         \%response,
-        {   Business   => '/ReceiverInfo/Business',
+        {
+            Business   => '/ReceiverInfo/Business',
             Receiver   => '/ReceiverInfo/Receiver',
             ReceiverID => '/ReceiverInfo/ReceiverID',
 
@@ -122,7 +123,8 @@ sub GetTransactionDetails {
     my $paymentitems = $self->getFieldsList(
         $som,
         $path . '/PaymentItemInfo/PaymentItem',
-        {   SalesTax => 'SalesTax',
+        {
+            SalesTax => 'SalesTax',
             Name     => 'Name',
             Number   => 'Number',
             Quantity => 'Quantity',
@@ -130,7 +132,8 @@ sub GetTransactionDetails {
         }
     );
 
-    if ( scalar( @$paymentitems ) > 0 ) {
+    if ( scalar(@$paymentitems) > 0 ) {
+
         # Options data must be extracted differently.  Specifically, the
         # "interesting" parts of the Options data is not in the values inside
         # the $som structure (which means $som->valueof(), which
@@ -149,19 +152,24 @@ sub GetTransactionDetails {
         # appropriately placed here.
         my $ii = 0;
         my @fulloptions;
-        foreach my $rec ( $som->dataof($path . '/PaymentItemInfo/PaymentItem' ) ) {
+        foreach
+            my $rec ( $som->dataof( $path . '/PaymentItemInfo/PaymentItem' ) )
+        {
             my %options;
-            foreach my $subrec ($rec->value()) {
-                foreach my $fieldrec ($$subrec->value()) {
-                    $options{$fieldrec->attr()->{name}} = $fieldrec->attr()->{value}
-                        if ($fieldrec->name() eq "Options");
+            foreach my $subrec ( $rec->value() ) {
+                foreach my $fieldrec ( $$subrec->value() ) {
+                    $options{ $fieldrec->attr()->{name} }
+                        = $fieldrec->attr()->{value}
+                        if ( $fieldrec->name() eq "Options" );
                 }
             }
             $paymentitems->[$ii]{Options} = \%options;
-            push(@fulloptions, \%options);
+            push( @fulloptions, \%options );
         }
+
         # Now, we can save the payment items properly
         $response{PaymentItems} = $paymentitems;
+
         # And set the PII_Options properly too.
         $response{PII_Options} = \@fulloptions;
     }

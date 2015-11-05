@@ -30,9 +30,9 @@ sub do_args {
     );
 
     my %patterns = ();
-    @patterns{ map {qr/^$_\b/i} @variables } = @variables;
+    @patterns{ map { qr/^$_\b/i } @variables } = @variables;
 
-    while ( <FILE> ) {
+    while (<FILE>) {
         chomp;
 
     MATCH: for my $pat ( keys %patterns ) {

@@ -19,10 +19,10 @@ sub DoCaptureRequest {
     my %types = (
         AuthorizationID => 'xs:string',
 
-#The inclusion of the "ebl:CompleteCodeType" here, or any other reasonable type,
-#causes and error. Assigning a null string allows the module to work normally
-#with the exception that testing for "Success" fails, one must test for not
-#being a "Failure"... there may be a life lesson here.
+        #The inclusion of the "ebl:CompleteCodeType" here, or any other reasonable type,
+        #causes and error. Assigning a null string allows the module to work normally
+        #with the exception that testing for "Success" fails, one must test for not
+        #being a "Failure"... there may be a life lesson here.
         CompleteType => '',
         Amount       => 'ebl:BasicAmountType',
         Note         => 'xs:string',
@@ -48,8 +48,8 @@ sub DoCaptureRequest {
 
     my $request
         = SOAP::Data->name(
-        DoCaptureRequest => \SOAP::Data->value( @ref_trans ) )
-        ->type( "ns:DoCaptureRequestType" );
+        DoCaptureRequest => \SOAP::Data->value(@ref_trans) )
+        ->type("ns:DoCaptureRequestType");
 
     my $som = $self->doCall( DoCaptureReq => $request )
         or return;
@@ -65,7 +65,8 @@ sub DoCaptureRequest {
     $self->getFields(
         $som, $path,
         \%response,
-        {   TransactionID       => 'TransactionID',
+        {
+            TransactionID       => 'TransactionID',
             ParentTransactionID => 'ParentTransactionID',
             ReceiptID           => 'ReceiptID',
             TransactionType     => 'TransactionType',

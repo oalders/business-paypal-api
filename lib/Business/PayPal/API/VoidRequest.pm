@@ -31,9 +31,8 @@ sub DoVoidRequest {
             if $args{Note};
     }
     my $request
-        = SOAP::Data->name(
-        DoVoidRequest => \SOAP::Data->value( @ref_trans ) )
-        ->type( "ns:VoidRequestType" );
+        = SOAP::Data->name( DoVoidRequest => \SOAP::Data->value(@ref_trans) )
+        ->type("ns:VoidRequestType");
 
     my $som = $self->doCall( DoVoidReq => $request )
         or return;
@@ -46,8 +45,10 @@ sub DoVoidRequest {
         return %response;
     }
 
-    $self->getFields( $som, $path, \%response,
-        { AuthorizationID => 'AuthorizationID' } );
+    $self->getFields(
+        $som, $path, \%response,
+        { AuthorizationID => 'AuthorizationID' }
+    );
 
     return %response;
 }

@@ -4,8 +4,8 @@ use Mojolicious::Lite;
 # You can spin this up when testing t/advanced in order to avoid 404s
 
 get '/' => sub {
-  my $c = shift;
-  $c->render(template => 'index');
+    my $c = shift;
+    $c->render( template => 'index' );
 };
 
 app->start;

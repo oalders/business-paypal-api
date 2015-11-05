@@ -45,8 +45,8 @@ sub RefundTransaction {
 
     my $request
         = SOAP::Data->name(
-        RefundTransactionRequest => \SOAP::Data->value( @ref_trans ) )
-        ->type( "ns:RefundTransactionRequestType" );
+        RefundTransactionRequest => \SOAP::Data->value(@ref_trans) )
+        ->type("ns:RefundTransactionRequestType");
 
     my $som = $self->doCall( RefundTransactionReq => $request )
         or return;
@@ -62,7 +62,8 @@ sub RefundTransaction {
     $self->getFields(
         $som, $path,
         \%response,
-        {   RefundTransactionID => 'RefundTransactionID',
+        {
+            RefundTransactionID => 'RefundTransactionID',
             FeeRefundAmount     => 'FeeRefundAmount',
             NetRefundAmount     => 'NetRefundAmount',
             GrossRefundAmount   => 'GrossRefundAmount',

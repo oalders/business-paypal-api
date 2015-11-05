@@ -15,7 +15,7 @@ else {
     plan tests => 5;
 }
 
-use_ok( 'Business::PayPal::API::TransactionSearch' );
+use_ok('Business::PayPal::API::TransactionSearch');
 #########################
 
 require 't/API.pl';
@@ -78,7 +78,7 @@ _PROFILEID_
 
 my $start_date = '1998-01-01T01:45:10.00Z';
 
-my $ts = Business::PayPal::API::TransactionSearch->new( %args );
+my $ts = Business::PayPal::API::TransactionSearch->new(%args);
 
 my $resp = $ts->TransactionSearch( StartDate => $start_date );
 
@@ -97,9 +97,12 @@ foreach my $record ( @{$resp} ) {
     }
 }
 
-ok( defined $profileID,
-    'Subscription Payment Creation Record and ProfileID Found' );
-ok( scalar keys %possible_txn_ids > 0,
+ok(
+    defined $profileID,
+    'Subscription Payment Creation Record and ProfileID Found'
+);
+ok(
+    scalar keys %possible_txn_ids > 0,
     'Subscription Payment Transactions Found'
 );
 
@@ -111,7 +114,8 @@ my $date_search_res = $ts->TransactionSearch(
 # One of these will need to be in the possibleTransactionID list (i.e., we're
 # assuming that at least one payment has occured in this repeating).
 
-ok( List::AllUtils::any {
+ok(
+    List::AllUtils::any {
         defined $possible_txn_ids{ $_->{TransactionID} }
     }
     @{$date_search_res},

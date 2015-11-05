@@ -121,18 +121,18 @@ sub DoDirectPaymentRequest {
                 SOAP::Data->name( Payer => $args{Payer} )
                     ->type( $types{Payer} ),
                 SOAP::Data->name(
-                    PayerName => \SOAP::Data->value( @payername )
+                    PayerName => \SOAP::Data->value(@payername)
                 ),
-                SOAP::Data->name(
-                    Address => \SOAP::Data->value( @payeraddr )
-                ),
+                SOAP::Data->name( Address => \SOAP::Data->value(@payeraddr) ),
             )
         )
     );
 
     push( @ccard, @ccowner );
-    push( @ccard,
-        SOAP::Data->name( CVV2 => $args{CVV2} )->type( $types{CVV2} ) );
+    push(
+        @ccard,
+        SOAP::Data->name( CVV2 => $args{CVV2} )->type( $types{CVV2} )
+    );
 
     #Assemble Payment Details
     my @paydetail = (
@@ -148,7 +148,7 @@ sub DoDirectPaymentRequest {
         SOAP::Data->name( ShippingTotal => $args{ShippingTotal} )
             ->attr( { currencyID => $args{currencyID} } )
             ->type( $types{currencyID} ),
-        SOAP::Data->name( ShipToAddress => \SOAP::Data->value( @shipaddr ) ),
+        SOAP::Data->name( ShipToAddress => \SOAP::Data->value(@shipaddr) ),
         SOAP::Data->name( InvoiceID     => $args{InvoiceID} )
             ->type( $types{InvoiceID} ),
         SOAP::Data->name( ButtonSource => $args{ButtonSource} )
@@ -156,12 +156,10 @@ sub DoDirectPaymentRequest {
     );
 
     my @payreqdetail = (
-        SOAP::Data->name( PaymentAction => $args{PaymentAction} )->type( '' ),
-        SOAP::Data->name(
-            PaymentDetails => \SOAP::Data->value( @paydetail )
-        ),
-        SOAP::Data->name( CreditCard => \SOAP::Data->value( @ccard ) ),
-        SOAP::Data->name( IPAddress  => $args{IPAddress} )
+        SOAP::Data->name( PaymentAction  => $args{PaymentAction} )->type(''),
+        SOAP::Data->name( PaymentDetails => \SOAP::Data->value(@paydetail) ),
+        SOAP::Data->name( CreditCard     => \SOAP::Data->value(@ccard) ),
+        SOAP::Data->name( IPAddress      => $args{IPAddress} )
             ->type( $types{IPAddress} ),
         SOAP::Data->name( MerchantSessionId => $args{MerchantSessionId} )
             ->type( $types{MerchantSessionId} ),
@@ -171,13 +169,12 @@ sub DoDirectPaymentRequest {
     my @reqval = (
         SOAP::Data->value( $self->version_req ),
         SOAP::Data->name(
-            DoDirectPaymentRequestDetails =>
-                \SOAP::Data->value( @payreqdetail )
-        )->attr( { xmlns => "urn:ebay:apis:eBLBaseComponents" } ),
+            DoDirectPaymentRequestDetails => \SOAP::Data->value(@payreqdetail)
+            )->attr( { xmlns => "urn:ebay:apis:eBLBaseComponents" } ),
     );
     my $request = (
         SOAP::Data->name(
-            DoDirectPaymentRequest => \SOAP::Data->value( @reqval )
+            DoDirectPaymentRequest => \SOAP::Data->value(@reqval)
         ),
     );
     my $som      = $self->doCall( DoDirectPaymentReq => $request ) or return;
@@ -191,7 +188,8 @@ sub DoDirectPaymentRequest {
     $self->getFields(
         $som, $path,
         \%response,
-        {   TransactionID => 'TransactionID',
+        {
+            TransactionID => 'TransactionID',
             Amount        => 'Amount',
             AVSCode       => 'AVSCode',
             CVV2Code      => 'CVV2Code',

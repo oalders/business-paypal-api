@@ -7,14 +7,14 @@ else {
     plan tests => 2;
 }
 
-use_ok( 'Business::PayPal::API::RefundTransaction' );
+use_ok('Business::PayPal::API::RefundTransaction');
 #########################
 
 require 't/API.pl';
 
 my %args = do_args();
 
-my $pp = new Business::PayPal::API::RefundTransaction( %args );
+my $pp = new Business::PayPal::API::RefundTransaction(%args);
 
 print STDERR <<"_TRANSID_";
 
