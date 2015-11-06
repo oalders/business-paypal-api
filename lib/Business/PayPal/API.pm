@@ -810,9 +810,8 @@ calls.
 
 =head1 SEE ALSO
 
-L<SOAP::Lite>, L<https://www.paypal.com/IntegrationCenter/ic_pro_home.html>,
-L<https://www.paypal.com/IntegrationCenter/ic_expresscheckout.html>,
-L<https://www.sandbox.paypal.com/en_US/pdf/PP_Sandbox_UserGuide.pdf>,
-L<https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf>
+L<SOAP::Lite>,
+L<PayPal User Guide|https://developer.paypal.com/webapps/developer/docs/classic/products>,
+L<PayPal API Reference|https://developer.paypal.com/webapps/developer/docs/api/overview>
 
 =cut
