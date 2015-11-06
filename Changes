@@ -3,8 +3,10 @@ Revision history for Perl module Business::PayPal::API
 {{$NEXT}}
 
 0.72 2015-10-23
+    - Release non-trial version of 0.71_03
 
 0.71_03 2015-10-12
+    - Adds IPC::System::Simple to prereqs
 
 0.71_02 2015-10-09
     - Merge in changes from Ron Phipps.

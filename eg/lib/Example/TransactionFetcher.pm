@@ -17,15 +17,10 @@ with 'Example::Role::Auth';
 
 sub find {
     my $self     = shift;
-    my @response = $self->_client->GetTransactionDetails(
+    my %response = $self->_client->GetTransactionDetails(
         TransactionID => $self->transaction_id );
 
-    unless ( ref $response[0] ) {
-        my %error = @response;
-        p %error;
-        die;
-    }
-    p @response;
+    p %response;
 }
 
 1;
