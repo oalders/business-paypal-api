@@ -3,6 +3,7 @@ package Example::Role::Auth;
 use Moo::Role;
 use MooX::Options;
 
+use Business::PayPal::API qw( GetTransactionDetails TransactionSearch );
 use Types::Standard qw( InstanceOf );
 
 # credentials
@@ -36,14 +37,14 @@ option username => (
 
 has _client => (
     is      => 'ro',
-    isa     => InstanceOf ['Business::PayPal::API::TransactionSearch'],
+    isa     => InstanceOf ['Business::PayPal::API'],
     lazy    => 1,
     builder => '_build_client',
 );
 
 sub _build_client {
     my $self = shift;
-    return Business::PayPal::API::TransactionSearch->new(
+    return Business::PayPal::API->new(
         Password  => $self->password,
         Signature => $self->signature,
         Username  => $self->username,
