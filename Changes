@@ -1,6 +1,10 @@
 Revision history for Perl module Business::PayPal::API
 
 {{$NEXT}}
+    - Set the types of the Address hashref in SetExpressCheckout (Marco
+      Pessotto)
+    - Add eg/get-transaction-details.pl and eg/search-transactions.pl (Olaf
+      Alders)
 
 0.72 2015-10-23
     - Release non-trial version of 0.71_03
