@@ -96,6 +96,13 @@ __END__
         TransactionID => $transid,
     );
 
+    my $received = $pp->TransactionSearch(
+        StartDate        => '2015-11-13T00:00:00Z',
+        EndDate          => '2015-11-13T00:00:00Z',
+        Status           => 'Success',
+        TransactionClass => 'Received',
+    );
+
 =head1 DESCRIPTION
 
 L<Business::PayPal::API::TransactionSearch> implements PayPal's
