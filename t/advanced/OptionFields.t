@@ -1,5 +1,5 @@
 use strict;
-use autodie qw(:all);
+use autodie qw(:file);
 
 use Cwd;
 use Test::More;

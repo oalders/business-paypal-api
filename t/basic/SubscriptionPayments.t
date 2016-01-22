@@ -1,7 +1,6 @@
-# -*- mode: cperl -*-
 use strict;
 use warnings;
-use autodie qw(:all);
+use autodie qw(:file);
 
 use Cwd;
 use List::AllUtils;
