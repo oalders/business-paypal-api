@@ -1,6 +1,5 @@
 requires "Carp" => "0";
 requires "Data::Printer" => "0";
-requires "IPC::System::Simple" => "0";
 requires "SOAP::Lite" => "0.67";
 requires "perl" => "5.008001";
 requires "strict" => "0";
