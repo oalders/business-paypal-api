@@ -21,3 +21,7 @@ on 'configure' => sub {
   requires "ExtUtils::MakeMaker" => "0";
   requires "Module::Build" => "0.28";
 };
+
+on 'develop' => sub {
+  requires "Test::CPAN::Changes" => "0.19";
+};

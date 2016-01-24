@@ -3,6 +3,7 @@ Revision history for Perl module Business::PayPal::API
 {{$NEXT}}
 
 0.74 2016-01-23
+    - Avoid depending on IPC::System::Simple
 
 0.73 2015-11-06
     - Set the types of the Address hashref in SetExpressCheckout (Marco
