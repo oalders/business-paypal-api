@@ -1,6 +1,8 @@
 Revision history for Perl module Business::PayPal::API
 
 {{$NEXT}}
+
+0.75      2017-04-04 12:39:37-04:00 America/Toronto
     - Allow setting of proxy when connecting to PayPal.
 
 0.74 2016-01-23
