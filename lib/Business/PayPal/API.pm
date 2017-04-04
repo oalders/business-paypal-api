@@ -86,8 +86,15 @@ sub new {
         )
     );
 
-    $Soap{$self} = SOAP::Lite->proxy( $proxy, timeout => $args{timeout} )
-        ->uri(C_xmlns_pp);
+    $Soap{$self} = SOAP::Lite->proxy(
+        $proxy,
+        timeout => $args{timeout},
+        (
+            exists $args{proxy_url}
+            ? ( proxy => [ [ 'http', 'https' ] => $args{proxy_url} ] )
+            : ()
+        )
+    )->uri(C_xmlns_pp);
 
     $Header{$self} = SOAP::Header->name(
         RequesterCredentials => \SOAP::Header->value(
@@ -490,6 +497,15 @@ PayPal's sandbox reference:
 L<https://www.paypal.com/IntegrationCenter/ic_sandbox.html>
 
 =back
+
+=item B<proxy_url>
+
+Optional. When set, the proxy at the specified URL will be used for outbound
+connections.
+
+=item B<timeout>
+
+Optional. Set the timeout in seconds. Defaults to 30 seconds.
 
 =head1 ERROR HANDLING
 

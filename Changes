@@ -1,6 +1,7 @@
 Revision history for Perl module Business::PayPal::API
 
 {{$NEXT}}
+    - Allow setting of proxy when connecting to PayPal.
 
 0.74 2016-01-23
     - Avoid depending on IPC::System::Simple
