@@ -36,8 +36,7 @@
             "Test::Code::TidyAll" : "0.50",
             "Test::More" : "0.88",
             "Test::Pod::Coverage" : "1.08",
-            "Test::Spelling" : "0.12",
-            "Test::Synopsis" : "0"
+            "Test::Spelling" : "0.12"
          }
       },
       "runtime" : {

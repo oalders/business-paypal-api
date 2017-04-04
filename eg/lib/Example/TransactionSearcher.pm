@@ -53,12 +53,12 @@ with 'Example::Role::Auth';
 sub search {
     my $self = shift;
 
-    my @terms
-        = ( 'amount', 'end_date', 'payer', 'start_date', );
+    my @terms = ( 'amount', 'end_date', 'payer', 'start_date', );
 
     my %search_terms
         = map { camelize($_) => $self->$_ } grep { $self->$_ } @terms;
-    $search_terms{TransactionID} = $self->transaction_id if $self->transaction_id;
+    $search_terms{TransactionID} = $self->transaction_id
+        if $self->transaction_id;
 
     say 'Search terms: ';
     p %search_terms;
