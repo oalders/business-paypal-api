@@ -512,7 +512,7 @@ Optional. Set the timeout in seconds. Defaults to 30 seconds.
 Every API call should return an B<Ack> response, whether I<Success>,
 I<Failure>, or otherwise (depending on the API call). If it returns
 any non-success value, you can find an I<Errors> entry in your return
-hash, whose value is a listref of hashrefs:
+hash, whose value is an arrayref of hashrefs:
 
  [ { ErrorCode => 10002,
      LongMessage => "Invalid security header" },

@@ -214,7 +214,7 @@ Business::PayPal::API - PayPal API
 Every API call should return an **Ack** response, whether _Success_,
 _Failure_, or otherwise (depending on the API call). If it returns
 any non-success value, you can find an _Errors_ entry in your return
-hash, whose value is a listref of hashrefs:
+hash, whose value is an arrayref of hashrefs:
 
     [ { ErrorCode => 10002,
         LongMessage => "Invalid security header" },
