@@ -182,7 +182,7 @@ sub GetExpressCheckoutDetails {
             Payer           => 'PayerInfo/Payer',
             PayerID         => 'PayerInfo/PayerID',
             PayerStatus     => 'PayerInfo/PayerStatus',
-            Salutation      => 'PayerInfo/PayerName/Saluation',
+            Salutation      => 'PayerInfo/PayerName/Salutation',
             FirstName       => 'PayerInfo/PayerName/FirstName',
             MiddleName      => 'PayerInfo/PayerName/MiddleName',
             LastName        => 'PayerInfo/PayerName/LastName',
