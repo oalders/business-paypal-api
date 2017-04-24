@@ -25,12 +25,14 @@ my %WriteMakefileArgs = (
   },
   "TEST_REQUIRES" => {
     "Cwd" => 0,
+    "ExtUtils::MakeMaker" => 0,
+    "File::Spec" => 0,
     "List::AllUtils" => 0,
     "Test::More" => 0,
     "Test::Most" => 0,
     "autodie" => 0
   },
-  "VERSION" => "0.75",
+  "VERSION" => "0.76",
   "test" => {
     "TESTS" => "t/*.t t/advanced/*.t t/basic/*.t"
   }
@@ -41,6 +43,8 @@ my %FallbackPrereqs = (
   "Carp" => 0,
   "Cwd" => 0,
   "Data::Printer" => 0,
+  "ExtUtils::MakeMaker" => 0,
+  "File::Spec" => 0,
   "List::AllUtils" => 0,
   "SOAP::Lite" => "0.67",
   "Test::More" => 0,

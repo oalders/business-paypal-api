@@ -48,8 +48,13 @@
          }
       },
       "test" : {
+         "recommends" : {
+            "CPAN::Meta" : "2.120900"
+         },
          "requires" : {
             "Cwd" : "0",
+            "ExtUtils::MakeMaker" : "0",
+            "File::Spec" : "0",
             "List::AllUtils" : "0",
             "Test::More" : "0",
             "Test::Most" : "0",
@@ -70,8 +75,9 @@
          "web" : "https://github.com/oalders/business-paypal-api"
       }
    },
-   "version" : "0.75",
+   "version" : "0.76",
    "x_contributors" : [
+      "Andrew Maltsev <am@ejelta.com>",
       "Daniel Hembree <danny@chinook.local>",
       "Danny Hembree <danny-hembree@dynamical.org>",
       "Dave Lambley <davel@isosceles.(none)>",

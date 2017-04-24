@@ -7,11 +7,17 @@ requires "warnings" => "0";
 
 on 'test' => sub {
   requires "Cwd" => "0";
+  requires "ExtUtils::MakeMaker" => "0";
+  requires "File::Spec" => "0";
   requires "List::AllUtils" => "0";
   requires "Test::More" => "0";
   requires "Test::Most" => "0";
   requires "autodie" => "0";
   requires "perl" => "5.008001";
+};
+
+on 'test' => sub {
+  recommends "CPAN::Meta" => "2.120900";
 };
 
 on 'configure' => sub {

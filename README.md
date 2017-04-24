@@ -6,7 +6,7 @@ Business::PayPal::API - PayPal SOAP API client with sandbox support
 
 # VERSION
 
-version 0.75
+version 0.76
 
 # SYNOPSIS
 
