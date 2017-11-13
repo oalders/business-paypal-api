@@ -496,8 +496,6 @@ PayPal's sandbox reference:
 
 L<https://www.paypal.com/IntegrationCenter/ic_sandbox.html>
 
-=back
-
 =item B<proxy_url>
 
 Optional. When set, the proxy at the specified URL will be used for outbound
@@ -506,6 +504,8 @@ connections.
 =item B<timeout>
 
 Optional. Set the timeout in seconds. Defaults to 30 seconds.
+
+=back
 
 =head1 ERROR HANDLING
 
