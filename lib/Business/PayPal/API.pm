@@ -301,10 +301,6 @@ __END__
 
 =encoding utf8
 
-=head1 NAME
-
-Business::PayPal::API - PayPal API
-
 =head1 SYNOPSIS
 
     use Business::PayPal::API qw( ExpressCheckout GetTransactionDetails );
