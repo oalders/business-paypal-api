@@ -130,6 +130,6 @@ None by default.
 
 =head1 SEE ALSO
 
-L<https://developer.paypal.com/en_US/pdf/PP_APIReference.pdf>
+L<https://developer.paypal.com/docs/api/overview/>
 
 =cut
