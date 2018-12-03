@@ -35,9 +35,9 @@ This works, and seems to be correct, albeit odd.
 
 =cut
 
-open SUBSCRIPTION_PAY_HTML, '>', 'subscription-payment.html';
+open my $SUBSCRIPTION_PAY_HTML, '>', 'subscription-payment.html';
 
-print SUBSCRIPTION_PAY_HTML <<_SUBSCRIPTION_PAYMENT_DATA_
+print {$SUBSCRIPTION_PAY_HTML} <<'_SUBSCRIPTION_PAYMENT_DATA_';
 <html>
     <body>
         <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -60,7 +60,7 @@ print SUBSCRIPTION_PAY_HTML <<_SUBSCRIPTION_PAYMENT_DATA_
 </html>
 _SUBSCRIPTION_PAYMENT_DATA_
     ;
-close SUBSCRIPTION_PAY_HTML;
+close $SUBSCRIPTION_PAY_HTML;
 
 my $cwd = getcwd;
 
